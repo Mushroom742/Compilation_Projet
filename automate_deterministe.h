@@ -15,7 +15,7 @@ typedef struct {
 	Etat* liste_etat;
 	Etat etat_initial;
 	Etat* liste_etats_accepteurs;
-	int** tab_transition;
+	Etat** tab_transition;
 } Automate_deterministe;
 
 #endif
