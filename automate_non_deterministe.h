@@ -15,7 +15,7 @@ typedef struct {
 }Etat;
 
 /* type alphabet défini par un tableau de booleens dont l'indice est le code
- * ASCII du caractère (True si le caractère est présent dans l'alphabet, 
+ * ASCII du caractère (True si le caractère est présent dans l'alphabet,
  * False sinon)
  */
 typedef struct {
@@ -36,7 +36,7 @@ typedef struct {
  * un tableau d'états
  * un état initial
  * un tableau d'états accepteurs
- * un tableau de transitions avec la ligne représentant l'état de départ 
+ * un tableau de transitions avec la ligne représentant l'état de départ
  *  et la colonne l'état d'arrivée
  */
 typedef struct {
@@ -50,11 +50,19 @@ typedef struct {
 //Renvoie un automate non déterministe reconnaissant le langage vide
 Automate_non_deterministe langage_vide();
 
+//Renvoie un automate non déterministe reconnaissant le mot vide
+Automate_non_deterministe mot_vide();
+
+//Renvoi un automate standard reconnaissant le langage composé d’un mot d’un caractère passé en paramètre
+Automate_non_deterministe un_mot(char symbole);
+
 //Initialise les cases du tableau de l'alphabet à False
 Alphabet init_alphabet();
 
 //Création d'un tableau d'état alloué dynamiquement
 Etat* alloc_tab_etat(int taille);
 
+//Création d'un tableau de transitions alloué dynamiquement
+Transition** alloc_tab_transition(int taille);
 
 #endif

@@ -8,39 +8,82 @@
 Automate_non_deterministe langage_vide(){
 	Automate_non_deterministe automate;
 	Etat etat;
-	
+
 	etat.num = 0;
-	
+
 	automate.alphabet = init_alphabet();
 	automate.liste_etat = alloc_tab_etat(1);
 	automate.liste_etat[0] = etat;
 	automate.etat_initial = etat;
 	automate.liste_etats_accepteurs = NULL;
 	automate.tab_transition = NULL;
-	
+
 	return automate;
-	
+
+}
+
+//Renvoie un automate non déterministe reconnaissant le mot vide
+Automate_non_deterministe mot_vide(){
+	Automate_non_deterministe automate;
+	Etat etat;
+
+	etat.num = 0;
+
+	automate.alphabet = init_alphabet();
+	automate.liste_etat = alloc_tab_etat(1);
+	automate.liste_etat[0] = etat;
+	automate.etat_initial = etat;
+	automate.liste_etats_accepteurs = alloc_tab_etat(1);
+	automate.liste_etats_accepteurs[0] = etat;
+	automate.tab_transition = NULL;
+
+	return automate;
+}
+
+//Renvoi un automate standard reconnaissant le langage composé d’un mot d’un caractère passé en paramètre
+Automate_non_deterministe un_mot(char symbole){
+	Automate_non_deterministe automate;
+	Etat etat_init, etat_final;
+	int int_symbole = symbole;
+
+	etat_init.num = 0;
+	etat_final.num = 0;
+
+	automate.alphabet = init_alphabet();
+	automate.alphabet.caractere[int_symbole] = True;
+	automate.liste_etat = alloc_tab_etat(2);
+	automate.liste_etat[0] = etat_init;
+	automate.liste_etat[1] = etat_final;
+	automate.etat_initial = etat_init;
+	automate.liste_etats_accepteurs = alloc_tab_etat(1);
+	automate.liste_etats_accepteurs[0] = etat_final;
+	automate.tab_transition = alloc_tab_transition(1);
+
+	return automate;
 }
 
 //Initialise les cases du tableau de l'alphabet à False
 Alphabet init_alphabet(){
 	Alphabet alphabet;
 	int i;
-	
+
 	for(i=0;i<TAILLE_ASCII;i++){
 		alphabet.caractere[i] = False;
 	}
-	
+
 	return alphabet;
 }
-
 
 //Création d'un tableau d'état alloué dynamiquement
 Etat* alloc_tab_etat(int taille){
 	Etat* tab_etat = NULL;
-	
+
 	tab_etat = malloc(taille * sizeof(Etat));
-	
+
 	return tab_etat;
 }
 
+//Création d'un tableau de transitions alloué dynamiquement
+Transition** alloc_tab_transition(int taille){
+	
+}
