@@ -44,7 +44,7 @@ typedef struct {
 	Etat* liste_etat;
 	Etat etat_initial;
 	Etat* liste_etats_accepteurs;
-	Transition** tab_transition;
+	Transition* tab_transition;
 } Automate_non_deterministe;
 
 //Renvoie un automate non déterministe reconnaissant le langage vide
@@ -63,6 +63,6 @@ Alphabet init_alphabet();
 Etat* alloc_tab_etat(int taille);
 
 //Création d'un tableau de transitions alloué dynamiquement
-Transition** alloc_tab_transition(int taille);
+Transition* alloc_tab_transition(int taille);
 
 #endif

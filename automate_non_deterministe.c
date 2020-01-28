@@ -47,7 +47,7 @@ Automate_non_deterministe un_mot(char symbole){
 	int int_symbole = symbole;
 
 	etat_init.num = 0;
-	etat_final.num = 0;
+	etat_final.num = 1;
 
 	automate.alphabet = init_alphabet();
 	automate.alphabet.caractere[int_symbole] = True;
@@ -58,6 +58,9 @@ Automate_non_deterministe un_mot(char symbole){
 	automate.liste_etats_accepteurs = alloc_tab_etat(1);
 	automate.liste_etats_accepteurs[0] = etat_final;
 	automate.tab_transition = alloc_tab_transition(1);
+	automate.tab_transition[0].depart = etat_init;
+	automate.tab_transition[0].arrivee = etat_final;
+	automate.tab_transition[0].symbole = symbole;
 
 	return automate;
 }
@@ -84,6 +87,10 @@ Etat* alloc_tab_etat(int taille){
 }
 
 //Création d'un tableau de transitions alloué dynamiquement
-Transition** alloc_tab_transition(int taille){
-	
+Transition* alloc_tab_transition(int taille){
+	Transition* tab_transition = NULL;
+
+	tab_transition = malloc(taille * sizeof(Transition));
+
+	return tab_transition;
 }
