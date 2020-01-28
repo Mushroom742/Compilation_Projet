@@ -1,7 +1,7 @@
 #ifndef AUTOMATE_NON_DETERMINISTE
 #define AUTOMATE_NON_DETERMINISTE
 
-#define TAILLE_ASCII 127
+#define TAILLE_ASCII 128
 
 //type booleen qui peut prendre 2 valeurs False et True
 typedef enum {
@@ -46,5 +46,15 @@ typedef struct {
 	Etat* liste_etats_accepteurs;
 	Transition** tab_transition;
 } Automate_non_deterministe;
+
+//Renvoie un automate non déterministe reconnaissant le langage vide
+Automate_non_deterministe langage_vide();
+
+//Initialise les cases du tableau de l'alphabet à False
+Alphabet init_alphabet();
+
+//Création d'un tableau d'état alloué dynamiquement
+Etat* alloc_tab_etat(int taille);
+
 
 #endif
