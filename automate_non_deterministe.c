@@ -57,10 +57,10 @@ Automate_non_deterministe un_mot(char symbole){
 	automate.etat_initial = etat_init;
 	automate.liste_etats_accepteurs = alloc_tab_etat(1);
 	automate.liste_etats_accepteurs[0] = etat_final;
-	automate.tab_transition = alloc_tab_transition(1);
-	automate.tab_transition[0].depart = etat_init;
-	automate.tab_transition[0].arrivee = etat_final;
-	automate.tab_transition[0].symbole = symbole;
+	automate.tab_transition = init_tab_transition(1);
+	automate.tab_transition[etat_init.num][etat_final.num].depart = etat_init;
+	automate.tab_transition[etat_init.num][etat_final.num].arrivee = etat_final;
+	automate.tab_transition[etat_init.num][etat_final.num].symbole = symbole;
 
 	return automate;
 }
@@ -86,11 +86,20 @@ Etat* alloc_tab_etat(int taille){
 	return tab_etat;
 }
 
-//Création d'un tableau de transitions alloué dynamiquement
-Transition* alloc_tab_transition(int taille){
-	Transition* tab_transition = NULL;
+//Création d'un tableau de transitions alloué dynamiquement et initialise les états de départ à -1
+Transition** init_tab_transition(int taille){
+	Transition** tab_transition = NULL;
+	int i,j;
 
-	tab_transition = malloc(taille * sizeof(Transition));
+	tab_transition = malloc(taille * sizeof(Transition*));
+	for(i=0;i<taille;i++){
+		tab_transition[i] = malloc(taille * sizeof(Transition));
+		for(j=0;j<taille;j++){
+			tab_transition[i][j].depart.num = -1;
+		}
+	}
+
+
 
 	return tab_transition;
 }
