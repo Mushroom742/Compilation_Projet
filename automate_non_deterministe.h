@@ -18,28 +18,30 @@ typedef struct {
 } Alphabet;
 
 /* type transition défini par un état de départ, un état d'arrivée, un
- * caractère de transition et l'adresse de la transition suivante
+ * caractère de transition et l'adresse de la transition suivante, les états
+ * étant représenté par des ints.
  */
 typedef struct {
-	Etat depart;
-	Etat arrivee;
+	int depart;
+	int arrivee;
 	char symbole;
 	Transition* transitionSuivante;
 } Transition;
 
 /* type automate non déterministe défini par
  * un alphabet
- * un tableau d'états
- * un état initial
- * un tableau d'états accepteurs
+ * un nombre d'états
+ * un nombre d'états finaux
+ * un état initial (représenté par un int)
+ * une liste d'états accepteurs (représenté par des int)
  * un tableau de liste de transitions avec la ligne représentant l'état de départ
  */
 typedef struct {
 	Alphabet alphabet;
 	int nombreEtats
 	int nombreEtatsFinaux
-	Etat etat_initial;
-	Etat* liste_etats_accepteurs;
+	int etat_initial;
+	int* liste_etats_accepteurs;
 	Transition* tab_transition;
 } Automate_non_deterministe;
 
