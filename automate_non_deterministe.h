@@ -43,7 +43,7 @@ typedef struct {
 	int nombreEtatsFinaux;
 	int etat_initial;
 	int* liste_etats_accepteurs;
-	Transition* tab_transition;
+	Transition** tab_transition;
 } Automate_non_deterministe;
 
 //Renvoie un automate non déterministe reconnaissant le langage vide
@@ -52,8 +52,9 @@ Automate_non_deterministe langage_vide();
 //Renvoie un automate non déterministe reconnaissant le mot vide
 Automate_non_deterministe mot_vide();
 
-//Renvoi un automate standard reconnaissant le langage composé d’un mot d’un caractère passé en paramètre
-Automate_non_deterministe un_mot(char symbole);
+/*Renvoie un automate standard reconnaissant le langage composé d’un mot d’un caractère passé en paramètre
+ * néessite également une transition (vide) en paramètre pour l'ajouter dans le tableau de transitions sans la perdre*/
+Automate_non_deterministe un_mot(char symbole,Transition* nouvelle_transition);
 
 //Initialise les cases du tableau de l'alphabet à False
 Alphabet init_alphabet();
@@ -62,6 +63,12 @@ Alphabet init_alphabet();
 int* alloc_tab_etat(int taille);
 
 //Création d'un tableau de transitions alloué dynamiquement et initialise les états de départ à -1
-Transition* init_tab_transition(int taille);
+Transition** init_tab_transition(int taille);
+
+//Ajoute une transition dans le tableau de transition en fonction de son état de départ
+void ajout_transition(Transition* transition, Transition** tab_transition);
+
+//Affiche un automate
+void affichage_automate_non_deterministe(Automate_non_deterministe automate);
 
 #endif
