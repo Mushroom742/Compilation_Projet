@@ -3,8 +3,8 @@
 #include "automate_non_deterministe.h"
 #include "automate_deterministe.h"
 
-int main (void){
-	Automate_non_deterministe auto_langage_vide;
+int main (){
+	/*Automate_non_deterministe auto_langage_vide;
 	int i;
 
 	auto_langage_vide = un_mot('X');
@@ -28,7 +28,7 @@ int main (void){
 	for(i=0;i<1;i++){
 		free(auto_langage_vide.tab_transition[i]);
 	}
-	free(auto_langage_vide.tab_transition);
+	free(auto_langage_vide.tab_transition);*/
 
 	return 0;
 }

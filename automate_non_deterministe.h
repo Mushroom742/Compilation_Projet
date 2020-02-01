@@ -21,12 +21,13 @@ typedef struct {
  * caractère de transition et l'adresse de la transition suivante, les états
  * étant représenté par des ints.
  */
-typedef struct {
+typedef struct Transition Transition;
+struct Transition{
 	int depart;
 	int arrivee;
 	char symbole;
 	Transition* transitionSuivante;
-} Transition;
+};
 
 /* type automate non déterministe défini par
  * un alphabet
@@ -38,8 +39,8 @@ typedef struct {
  */
 typedef struct {
 	Alphabet alphabet;
-	int nombreEtats
-	int nombreEtatsFinaux
+	int nombreEtats;
+	int nombreEtatsFinaux;
 	int etat_initial;
 	int* liste_etats_accepteurs;
 	Transition* tab_transition;
@@ -57,10 +58,10 @@ Automate_non_deterministe un_mot(char symbole);
 //Initialise les cases du tableau de l'alphabet à False
 Alphabet init_alphabet();
 
-//Création d'un tableau d'état alloué dynamiquement
-Etat* alloc_tab_etat(int taille);
+//Création d'un tableau de int alloué dynamiquement représentant les états
+int* alloc_tab_etat(int taille);
 
 //Création d'un tableau de transitions alloué dynamiquement et initialise les états de départ à -1
-Transition** init_tab_transition(int taille);
+Transition* init_tab_transition(int taille);
 
 #endif
