@@ -9,11 +9,6 @@ typedef enum {
 	True = 1
 } Bool;
 
-//type état défini par un numéro
-typedef struct {
-	int num;
-}Etat;
-
 /* type alphabet défini par un tableau de booleens dont l'indice est le code
  * ASCII du caractère (True si le caractère est présent dans l'alphabet,
  * False sinon)
@@ -22,13 +17,14 @@ typedef struct {
 	Bool caractere[TAILLE_ASCII];
 } Alphabet;
 
-/* type transition défini par un état de départ, un état d'arrivée et un
- * caractère de transition
+/* type transition défini par un état de départ, un état d'arrivée, un
+ * caractère de transition et l'adresse de la transition suivante
  */
 typedef struct {
 	Etat depart;
 	Etat arrivee;
 	char symbole;
+	Transition* transitionSuivante;
 } Transition;
 
 /* type automate non déterministe défini par
@@ -36,15 +32,15 @@ typedef struct {
  * un tableau d'états
  * un état initial
  * un tableau d'états accepteurs
- * un tableau de transitions avec la ligne représentant l'état de départ
- *  et la colonne l'état d'arrivée
+ * un tableau de liste de transitions avec la ligne représentant l'état de départ
  */
 typedef struct {
 	Alphabet alphabet;
-	Etat* liste_etat;
+	int nombreEtats
+	int nombreEtatsFinaux
 	Etat etat_initial;
 	Etat* liste_etats_accepteurs;
-	Transition** tab_transition;
+	Transition* tab_transition;
 } Automate_non_deterministe;
 
 //Renvoie un automate non déterministe reconnaissant le langage vide
