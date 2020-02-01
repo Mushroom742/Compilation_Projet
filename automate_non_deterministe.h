@@ -3,19 +3,21 @@
 
 #define TAILLE_ASCII 128
 
-//type booleen qui peut prendre 2 valeurs False et True
-typedef enum {
-	False = 0,
-	True = 1
-} Bool;
-
-/* type alphabet défini par un tableau de booleens dont l'indice est le code
- * ASCII du caractère (True si le caractère est présent dans l'alphabet,
- * False sinon)
+/* type caractère défini par un symbole et le caractere suivant dans la liste
  */
-typedef struct {
-	Bool caractere[TAILLE_ASCII];
-} Alphabet;
+typedef struct Caractere Caractere;
+struct Caractere {
+	char symbole;
+	Caractere* caractere_suivant;
+};
+
+//type état défini par un numéro, s'il est accepteur (1) ou non (0) et l'état suivant dans la liste
+typedef struct Etat Etat;
+struct Etat {
+	int num;
+	int accepteur;
+	Etat* etat_suivant;
+};
 
 /* type transition défini par un état de départ, un état d'arrivée, un
  * caractère de transition et l'adresse de la transition suivante, les états
@@ -23,26 +25,24 @@ typedef struct {
  */
 typedef struct Transition Transition;
 struct Transition{
-	int depart;
-	int arrivee;
-	char symbole;
+	Etat* depart;
+	Etat* arrivee;
+	Caractere* symbole;
 	Transition* transitionSuivante;
 };
 
 /* type automate non déterministe défini par
- * un alphabet
+ * un alphabet (liste chainée de caractères)
  * un nombre d'états
- * un nombre d'états finaux
- * un état initial (représenté par un int)
- * une liste d'états accepteurs (représenté par des int)
- * un tableau de liste de transitions avec la ligne représentant l'état de départ
+ * une liste chainée d'états (les états accepteurs en premier)
+ * un état initial
+ * un tableau de listes chainées de transitions avec l'indice de la ligne représentant l'état de départ
  */
 typedef struct {
-	Alphabet alphabet;
+	Caractere* alphabet;
 	int nombreEtats;
-	int nombreEtatsFinaux;
-	int etat_initial;
-	int* liste_etats_accepteurs;
+	Etat* liste_etat;
+	Etat* etat_initial;
 	Transition** tab_transition;
 } Automate_non_deterministe;
 
@@ -59,8 +59,8 @@ Automate_non_deterministe un_mot(char symbole,Transition* nouvelle_transition);
 //Initialise les cases du tableau de l'alphabet à False
 Alphabet init_alphabet();
 
-//Création d'un tableau de int alloué dynamiquement représentant les états
-int* alloc_tab_etat(int taille);
+//Renvoie la réunion de 2 alphabets
+Alphabet reunion_alphabet(Alphabet alphabet1, Alphabet alphabet2);
 
 //Création d'un tableau de transitions alloué dynamiquement et initialise les états de départ à -1
 Transition** init_tab_transition(int taille);
@@ -70,5 +70,8 @@ void ajout_transition(Transition* transition, Transition** tab_transition);
 
 //Affiche un automate
 void affichage_automate_non_deterministe(Automate_non_deterministe automate);
+
+//Renvoie un automate standard reconnaissant la réunion des langages des 2 automates passés en paramètre
+Automate_non_deterministe reunion(Automate_non_deterministe automate1, Automate_non_deterministe automate2);
 
 #endif
