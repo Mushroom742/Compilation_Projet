@@ -7,45 +7,47 @@
 //TO DO : MODIFIER 3 FONCTIONS DE BASE AVEC NOUVELLE STRUCTURE
 
 //Renvoie un automate non déterministe reconnaissant le langage vide
-Automate_non_deterministe langage_vide(){
-	Automate_non_deterministe automate;
+Automate_non_deterministe* langage_vide(){
+	Automate_non_deterministe* automate = malloc(sizeof(Automate_non_deterministe*));
 	Etat* etat = malloc(sizeof(Etat*));
 
 	etat->num = 0;
 	etat->accepteur = 0;
 	etat->etat_suivant = NULL;
 
-	automate.alphabet = NULL;
-	automate.nombreEtats = 1;
-	automate.liste_etat = etat;
-	automate.etat_initial = etat;
-	automate.tab_transition = init_tab_transition(1);
+	automate->alphabet = NULL;
+	automate->nombreEtats = 1;
+	automate->liste_etat = etat;
+	automate->etat_initial = etat;
+	automate->tab_transition = init_tab_transition(1);
+	automate->automate_suivant = NULL;
 
 	return automate;
 
 }
 
 //Renvoie un automate non déterministe reconnaissant le mot vide
-Automate_non_deterministe mot_vide(){
-	Automate_non_deterministe automate;
+Automate_non_deterministe* mot_vide(){
+	Automate_non_deterministe* automate = malloc(sizeof(Automate_non_deterministe*));
 	Etat* etat = malloc(sizeof(Etat*));
 
 	etat->num = 0;
 	etat->accepteur = 1;
 	etat->etat_suivant = NULL;
 
-	automate.alphabet = NULL;
-	automate.nombreEtats = 1;
-	automate.liste_etat = etat;
-	automate.etat_initial = etat;
-	automate.tab_transition = init_tab_transition(1);
+	automate->alphabet = NULL;
+	automate->nombreEtats = 1;
+	automate->liste_etat = etat;
+	automate->etat_initial = etat;
+	automate->tab_transition = init_tab_transition(1);
+	automate->automate_suivant = NULL;
 
 	return automate;
 }
 
 //Renvoie un automate standard reconnaissant le langage composé d’un mot d’un caractère passé en paramètre
-Automate_non_deterministe un_mot(char symbole){
-	Automate_non_deterministe automate;
+Automate_non_deterministe* un_mot(char symbole){
+	Automate_non_deterministe* automate = malloc(sizeof(Automate_non_deterministe*));
 	Etat* etat_init = malloc(sizeof(Etat*));
 	Etat* etat_final = malloc(sizeof(Etat*));
 	Transition* transition = malloc(sizeof(Transition*));
@@ -67,12 +69,13 @@ Automate_non_deterministe un_mot(char symbole){
 	transition->caractere = caractere;
 	transition->transitionSuivante = NULL;
 
-	automate.alphabet = caractere;
-	automate.nombreEtats = 2;
-	automate.liste_etat = etat_final;
-	automate.etat_initial = etat_init;
-	automate.tab_transition = init_tab_transition(2);
-	automate.tab_transition[0] = transition;
+	automate->alphabet = caractere;
+	automate->nombreEtats = 2;
+	automate->liste_etat = etat_final;
+	automate->etat_initial = etat_init;
+	automate->tab_transition = init_tab_transition(2);
+	automate->tab_transition[0] = transition;
+	automate->automate_suivant = NULL;
 
 	return automate;
 }
@@ -115,29 +118,29 @@ void ajout_transition(Transition* transition, Transition** tab_transition){
 
 
 //Affiche un automate
-void affichage_automate_non_deterministe(Automate_non_deterministe automate){
+void affichage_automate_non_deterministe(Automate_non_deterministe* automate){
 	int i;
 	Transition* transition_act;
 	Caractere* caractere_act;
 	Etat* etat_act;
 
 	printf("Alphabet :");
-	caractere_act = automate.alphabet;
+	caractere_act = automate->alphabet;
 	while(caractere_act != NULL){
 		printf(" %c,",caractere_act->symbole);
 		caractere_act = caractere_act->caractere_suivant;
 	}
-	printf("\nNb états : %d \n",automate.nombreEtats);
-	printf("Etat initial : %d \n",automate.etat_initial->num);
+	printf("\nNb états : %d \n",automate->nombreEtats);
+	printf("Etat initial : %d \n",automate->etat_initial->num);
 	printf("Etats accepteurs :");
-	etat_act = automate.liste_etat;
+	etat_act = automate->liste_etat;
 	while(etat_act != NULL && (etat_act->accepteur == 1)){
 		printf(" %d,",etat_act->num);
 		etat_act = etat_act->etat_suivant;
 	}
 	printf("\nTransitions :");
-	for(i=0;i<automate.nombreEtats;i++){
-		transition_act = automate.tab_transition[i];
+	for(i=0;i<automate->nombreEtats;i++){
+		transition_act = automate->tab_transition[i];
 		while(transition_act != NULL){
 			printf(" (%d,%c,%d),",transition_act->depart->num,transition_act->caractere->symbole,transition_act->arrivee->num);
 			transition_act = transition_act->transitionSuivante;

@@ -4,11 +4,11 @@
 #include "automate_deterministe.h"
 
 int main (){
-	Automate_non_deterministe automate;
+	Automate_non_deterministe* liste_automate = NULL;
 
-	automate = un_mot('a');
+	liste_automate = un_mot('a');
 
-	affichage_automate_non_deterministe(automate);
+	affichage_automate_non_deterministe(liste_automate);
 	
 	//free(auto_langage_vide.tab_transition);
 
