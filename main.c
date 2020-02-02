@@ -9,8 +9,8 @@ int main (){
 	liste_automate = un_mot('a');
 
 	affichage_automate_non_deterministe(liste_automate);
-	
-	//free(auto_langage_vide.tab_transition);
+
+	free(liste_automate);
 
 	return 0;
 }

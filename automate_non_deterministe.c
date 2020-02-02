@@ -60,7 +60,7 @@ Automate_non_deterministe* un_mot(char symbole){
 	etat_final->num = 1;
 	etat_final->accepteur = 1;
 	etat_final->etat_suivant = etat_init;
-	
+
 	caractere->symbole = symbole;
 	caractere->caractere_suivant = NULL;
 
@@ -152,8 +152,8 @@ void affichage_automate_non_deterministe(Automate_non_deterministe* automate){
 //A MODIFIER
 //Renvoie un automate standard reconnaissant la réunion des langages des 2 automates passés en paramètre
 Automate_non_deterministe reunion(Automate_non_deterministe automate1, Automate_non_deterministe automate2){
-	Automate_non_deterministe automate;
-	int i;
+	//Automate_non_deterministe automate;
+	//int i;
 
 	/*automate.alphabet = reunion_alphabet(automate1.alphabet,automate2.alphabet);
 	automate.nombreEtats = automate1.nombreEtats + automate2.nombreEtats - 1;
@@ -173,4 +173,45 @@ Automate_non_deterministe reunion(Automate_non_deterministe automate1, Automate_
 
 
 
+}
+
+void free_automate(Automate_non_deterministe* automate){
+	int i;
+	Transition* transition_act;
+	Transition* transition_tmp = malloc(sizeof(Transition*));
+	Caractere* caractere_act;
+	Caractere* caractere_tmp = malloc(sizeof(Caractere*));
+	Etat* etat_act;
+	Etat* etat_tmp = malloc(sizeof(Etat*));
+
+	caractere_act = automate->alphabet;
+	while(caractere_act->caractere_suivant != NULL){
+		caractere_tmp = caractere_act->caractere_suivant;
+		caractere_act->caractere_suivant = caractere_tmp->caractere_suivant;
+		free(caractere_tmp);
+	}
+	free(caractere_act);
+
+	free(automate->etat_initial);
+
+	etat_act = automate->liste_etat;
+	while(etat_act->etat_suivant != NULL){
+		etat_tmp = etat_act->etat_suivant;
+		etat_act->etat_suivant = etat_tmp->etat_suivant;
+		free(etat_tmp);
+	}
+	free(etat_act);
+
+	for(i=0;i<automate->nombreEtats;i++){
+		transition_act = automate->tab_transition[i];
+		while(transition_act->transitionSuivante != NULL){
+			transition_tmp = transition_act->transitionSuivante;
+			transition_act->transitionSuivante = transition_tmp->transitionSuivante;
+			free(transition_tmp);
+		}
+		free(transition_act);
+	}
+	free(automate->tab_transition);
+
+	free(automate->automate_suivant);
 }
