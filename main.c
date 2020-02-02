@@ -10,7 +10,7 @@ int main (){
 
 	affichage_automate_non_deterministe(liste_automate);
 
-	free(liste_automate);
+	free_automate(liste_automate);
 
 	return 0;
 }

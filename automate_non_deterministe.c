@@ -8,8 +8,8 @@
 
 //Renvoie un automate non déterministe reconnaissant le langage vide
 Automate_non_deterministe* langage_vide(){
-	Automate_non_deterministe* automate = malloc(sizeof(Automate_non_deterministe*));
-	Etat* etat = malloc(sizeof(Etat*));
+	Automate_non_deterministe* automate = malloc(sizeof(Automate_non_deterministe));
+	Etat* etat = malloc(sizeof(Etat));
 
 	etat->num = 0;
 	etat->accepteur = 0;
@@ -28,8 +28,8 @@ Automate_non_deterministe* langage_vide(){
 
 //Renvoie un automate non déterministe reconnaissant le mot vide
 Automate_non_deterministe* mot_vide(){
-	Automate_non_deterministe* automate = malloc(sizeof(Automate_non_deterministe*));
-	Etat* etat = malloc(sizeof(Etat*));
+	Automate_non_deterministe* automate = malloc(sizeof(Automate_non_deterministe));
+	Etat* etat = malloc(sizeof(Etat));
 
 	etat->num = 0;
 	etat->accepteur = 1;
@@ -47,11 +47,11 @@ Automate_non_deterministe* mot_vide(){
 
 //Renvoie un automate standard reconnaissant le langage composé d’un mot d’un caractère passé en paramètre
 Automate_non_deterministe* un_mot(char symbole){
-	Automate_non_deterministe* automate = malloc(sizeof(Automate_non_deterministe*));
-	Etat* etat_init = malloc(sizeof(Etat*));
-	Etat* etat_final = malloc(sizeof(Etat*));
-	Transition* transition = malloc(sizeof(Transition*));
-	Caractere* caractere = malloc(sizeof(Caractere*));
+	Automate_non_deterministe* automate = malloc(sizeof(Automate_non_deterministe));
+	Etat* etat_init = malloc(sizeof(Etat));
+	Etat* etat_final = malloc(sizeof(Etat));
+	Transition* transition = malloc(sizeof(Transition));
+	Caractere* caractere = malloc(sizeof(Caractere));
 
 	etat_init->num = 0;
 	etat_init->accepteur = 0;
@@ -178,24 +178,22 @@ Automate_non_deterministe reunion(Automate_non_deterministe automate1, Automate_
 void free_automate(Automate_non_deterministe* automate){
 	int i;
 	Transition* transition_act;
-	Transition* transition_tmp = malloc(sizeof(Transition*));
+	Transition* transition_tmp;
 	Caractere* caractere_act;
-	Caractere* caractere_tmp = malloc(sizeof(Caractere*));
+	Caractere* caractere_tmp;
 	Etat* etat_act;
-	Etat* etat_tmp = malloc(sizeof(Etat*));
+	Etat* etat_tmp;
 
 	caractere_act = automate->alphabet;
-	while(caractere_act->caractere_suivant != NULL){
+	while(caractere_act != NULL && caractere_act->caractere_suivant != NULL){
 		caractere_tmp = caractere_act->caractere_suivant;
 		caractere_act->caractere_suivant = caractere_tmp->caractere_suivant;
 		free(caractere_tmp);
 	}
 	free(caractere_act);
 
-	free(automate->etat_initial);
-
 	etat_act = automate->liste_etat;
-	while(etat_act->etat_suivant != NULL){
+	while(etat_act != NULL && etat_act->etat_suivant != NULL){
 		etat_tmp = etat_act->etat_suivant;
 		etat_act->etat_suivant = etat_tmp->etat_suivant;
 		free(etat_tmp);
@@ -204,7 +202,7 @@ void free_automate(Automate_non_deterministe* automate){
 
 	for(i=0;i<automate->nombreEtats;i++){
 		transition_act = automate->tab_transition[i];
-		while(transition_act->transitionSuivante != NULL){
+		while(transition_act != NULL && transition_act->transitionSuivante != NULL){
 			transition_tmp = transition_act->transitionSuivante;
 			transition_act->transitionSuivante = transition_tmp->transitionSuivante;
 			free(transition_tmp);
@@ -213,5 +211,5 @@ void free_automate(Automate_non_deterministe* automate){
 	}
 	free(automate->tab_transition);
 
-	free(automate->automate_suivant);
+	free(automate);
 }
