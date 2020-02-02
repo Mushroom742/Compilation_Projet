@@ -5,12 +5,19 @@
 
 int main (){
 	Automate_non_deterministe* liste_automate = NULL;
+	Automate_non_deterministe* auto1 = NULL;
+	Automate_non_deterministe* auto2 = NULL;
 
-	liste_automate = un_mot('a');
-
-	affichage_automate_non_deterministe(liste_automate);
-
-	free_automate(liste_automate);
+	auto1 = un_mot('a');
+	affichage_automate_non_deterministe(auto1);
+	
+	auto2 = un_mot('a');
+	affichage_automate_non_deterministe(auto2);
+	
+	reunion(auto1,auto2);
+	affichage_automate_non_deterministe(auto1);
+	
+	free_automate(auto1);
 
 	return 0;
 }

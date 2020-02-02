@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//TO DO : MODIFIER 3 FONCTIONS DE BASE AVEC NOUVELLE STRUCTURE
+//TO DO : Gérer doublons dans alphabet + free des doublons
 
 //Renvoie un automate non déterministe reconnaissant le langage vide
 Automate_non_deterministe* langage_vide(){
@@ -80,18 +80,39 @@ Automate_non_deterministe* un_mot(char symbole){
 	return automate;
 }
 
-//A MODIFIER (laisse le moi)
-//Renvoie la réunion de 2 alphabets
-/*Alphabet reunion_alphabet(Alphabet alphabet1, Alphabet alphabet2){
-	Alphabet alphabet;
-	int i;
-
-	for(i=0;i<TAILLE_ASCII;i++){
-		alphabet.caractere[i] = alphabet1.caractere[i] | alphabet2.caractere[i];
+//Ajoute l'alphabet 2 dans l'alphabet 1
+void reunion_alphabet(Caractere* alphabet1, Caractere* alphabet2){
+	Caractere* caract_act1 = alphabet1;
+	Caractere* caract_act2 = alphabet2;
+	Caractere* tmp1 = NULL;
+	Caractere* tmp2 = NULL;
+	
+	while(caract_act2 != NULL){
+		if(caract_act1 == NULL){//alphabet1 fini
+			caract_act1 = caract_act2;
+			return;
+		}
+		
+		//tri fusion
+		while(caract_act1->caractere_suivant != NULL && caract_act1->caractere_suivant->symbole < caract_act2->symbole){
+			caract_act1 = caract_act1->caractere_suivant;
+		}
+		if(caract_act1->caractere_suivant == NULL){//si fin de l'alphabet1
+			caract_act1->caractere_suivant = caract_act2;
+			return;
+		}
+		else if(caract_act1->caractere_suivant->symbole == caract_act2->symbole){//si même caractère dans les 2 alphabets
+			caract_act2 = caract_act2->caractere_suivant;
+		}
+		else{//on ajoute le caractère 2 après le caractère 1 et on avance dans l'alphabet 2
+			tmp1 = caract_act1->caractere_suivant;
+			tmp2 = caract_act2->caractere_suivant;
+			caract_act1->caractere_suivant = caract_act2;
+			caract_act2->caractere_suivant = tmp1;
+			caract_act2 = tmp2;
+		}
 	}
-
-	return alphabet
-}*/
+}
 
 
 //Création d'un tableau de listes de transitions alloué dynamiquement
@@ -109,10 +130,10 @@ Transition** init_tab_transition(int taille){
 
 //Ajoute une transition dans le tableau de transition en fonction de son état de départ
 void ajout_transition(Transition* transition, Transition** tab_transition){
-	/*Transition* transition_act = tab_transition[transition->depart];
+	Transition* transition_act = tab_transition[transition->depart->num];
 
-	tab_transition[transition->depart] = transition;
-	transition->transitionSuivante = transition_act;*/
+	tab_transition[transition->depart->num] = transition;
+	transition->transitionSuivante = transition_act;
 
 }
 
@@ -146,32 +167,86 @@ void affichage_automate_non_deterministe(Automate_non_deterministe* automate){
 			transition_act = transition_act->transitionSuivante;
 		}
 	}
-	printf("\n");
+	printf("\n\n");
 }
 
-//A MODIFIER
 //Renvoie un automate standard reconnaissant la réunion des langages des 2 automates passés en paramètre
-Automate_non_deterministe reunion(Automate_non_deterministe automate1, Automate_non_deterministe automate2){
-	//Automate_non_deterministe automate;
-	//int i;
-
-	/*automate.alphabet = reunion_alphabet(automate1.alphabet,automate2.alphabet);
-	automate.nombreEtats = automate1.nombreEtats + automate2.nombreEtats - 1;
-	automate.etat_initial = 0;
-	automate.nombreEtatsFinaux = automate1.nombreEtatsFinaux + automate2.nombreEtatsFinaux;
-	automate.liste_etats_accepteurs = alloc_tab_etat(automate.nombreEtatsFinaux);
-	for(i=0;i<automate.nombreEtatsFinaux;i++){
-		if(i<automate1.nombreEtatsFinaux){
-			automate.liste_etats_accepteurs[i] = automate1.liste_etats_accepteurs[i];
+void reunion(Automate_non_deterministe* automate1, Automate_non_deterministe* automate2){
+	Etat* etat_act = NULL;
+	Etat* etat_tmp = NULL;
+	int i,nb_etat;
+	Transition* trans_act = NULL;
+	Transition* trans_tmp = NULL;
+	
+	
+	reunion_alphabet(automate1->alphabet,automate2->alphabet);
+	
+	//on ajoute les états de l'automate 2 à la fin des états accepteurs de l'automate 1 et on modifie leur numéro
+	etat_act = automate1->liste_etat;
+	while(etat_act->etat_suivant != NULL && etat_act->etat_suivant->accepteur == 1){
+		etat_act = etat_act->etat_suivant;
+	}
+	etat_tmp = etat_act->etat_suivant;
+	etat_act->etat_suivant = automate2->liste_etat;
+	for(i=0;i<automate2->nombreEtats;i++){
+		if(etat_act->etat_suivant == automate2->etat_initial){
+			etat_act->etat_suivant = automate2->etat_initial->etat_suivant;
 		}
-		else {
-			automate.liste_etats_accepteurs[i] = automate2.liste_etats_accepteurs[i - automate1.nombreEtatsFinaux] + automate1.nombreEtatsFinaux;
+		else{
+			etat_act->etat_suivant->num = etat_act->etat_suivant->num + automate1->nombreEtats - 1;
+			etat_act = etat_act->etat_suivant;
 		}
-	}*/
+		
+	}
+	etat_act->etat_suivant = etat_tmp;
+	
+	//on change le nombre d'états de l'automate 1
+	nb_etat = automate1->nombreEtats;
+	automate1->nombreEtats = automate1->nombreEtats + automate2->nombreEtats - 1;
+	
+	//réallocation du tableau de transition + remplissage avec les transitions de l'automate 2
+	automate1->tab_transition = (Transition**) realloc(automate1->tab_transition, automate1->nombreEtats * sizeof(Transition*));
 
-
-
-
+	for(i=nb_etat;i<automate1->nombreEtats;i++){
+		automate1->tab_transition[i] = NULL;
+	}
+	for(i=0;i<automate2->nombreEtats;i++){
+		trans_act = automate2->tab_transition[i];
+		if(i == automate2->etat_initial->num){//si état initial de l'automate 2
+			while(trans_act != NULL){//changement de l'état départ de la transition et ajout au bon endroit
+				trans_act->depart = automate1->etat_initial;
+				trans_tmp = trans_act->transitionSuivante;
+				ajout_transition(trans_act,automate1->tab_transition);
+				trans_act = trans_tmp;
+			}
+		}
+		else{
+			while(trans_act != NULL){
+				trans_tmp = trans_act->transitionSuivante;
+				ajout_transition(trans_act,automate1->tab_transition);
+				trans_act = trans_tmp;
+			}
+		}
+	}
+	
+	//si état initial de l'automate 2 est accepteur, on rend l'état initial 
+	//accepteur de l'automate 1 et on met l'état au bon endroit dans la liste			
+	if(automate1->etat_initial->accepteur == 0 && automate2->etat_initial->accepteur == 1){
+		automate1->etat_initial->accepteur = 1;
+		etat_act = automate1->liste_etat;
+		if(etat_act != automate1->etat_initial){
+			while(etat_act->etat_suivant != automate1->etat_initial){
+				etat_act = etat_act->etat_suivant;
+			}
+			etat_act->etat_suivant = automate1->etat_initial->etat_suivant;
+			etat_tmp = automate1->liste_etat;
+			automate1->liste_etat = automate1->etat_initial;
+			automate1->etat_initial->etat_suivant = etat_tmp;
+		}
+			
+	}
+	
+	free(automate2->etat_initial);
 
 }
 

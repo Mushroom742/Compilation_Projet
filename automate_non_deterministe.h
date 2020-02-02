@@ -57,7 +57,7 @@ Automate_non_deterministe* mot_vide();
 Automate_non_deterministe* un_mot(char symbole);
 
 //Renvoie la réunion de 2 alphabets
-//Alphabet reunion_alphabet(Alphabet alphabet1, Alphabet alphabet2);
+void reunion_alphabet(Caractere* alphabet1, Caractere* alphabet2);
 
 //Création d'un tableau de transitions alloué dynamiquement
 Transition** init_tab_transition(int taille);
@@ -69,7 +69,7 @@ void ajout_transition(Transition* transition, Transition** tab_transition);
 void affichage_automate_non_deterministe(Automate_non_deterministe* automate);
 
 //Renvoie un automate standard reconnaissant la réunion des langages des 2 automates passés en paramètre
-Automate_non_deterministe reunion(Automate_non_deterministe automate1, Automate_non_deterministe automate2);
+void reunion(Automate_non_deterministe* automate1, Automate_non_deterministe* automate2);
 
 //free un automate
 void free_automate(Automate_non_deterministe* automate);
