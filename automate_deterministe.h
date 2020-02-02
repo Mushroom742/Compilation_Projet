@@ -11,7 +11,7 @@
  *  du tableau est l'état d'arrivée.
  */
 typedef struct {
-	Alphabet alphabet;
+	//Alphabet alphabet;
 	int* liste_etat;
 	int etat_initial;
 	int* liste_etats_accepteurs;

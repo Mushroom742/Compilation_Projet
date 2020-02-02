@@ -6,11 +6,10 @@
 
 //TO DO : MODIFIER 3 FONCTIONS DE BASE AVEC NOUVELLE STRUCTURE
 
-//A MODIFIER
 //Renvoie un automate non déterministe reconnaissant le langage vide
 Automate_non_deterministe langage_vide(){
 	Automate_non_deterministe automate;
-	Etat* etat;
+	Etat* etat = malloc(sizeof(Etat*));
 
 	etat->num = 0;
 	etat->accepteur = 0;
@@ -20,17 +19,16 @@ Automate_non_deterministe langage_vide(){
 	automate.nombreEtats = 1;
 	automate.liste_etat = etat;
 	automate.etat_initial = etat;
-	automate.tab_transition = NULL;
+	automate.tab_transition = init_tab_transition(1);
 
 	return automate;
 
 }
 
-//A MODIFIER
 //Renvoie un automate non déterministe reconnaissant le mot vide
 Automate_non_deterministe mot_vide(){
 	Automate_non_deterministe automate;
-	Etat* etat;
+	Etat* etat = malloc(sizeof(Etat*));
 
 	etat->num = 0;
 	etat->accepteur = 1;
@@ -40,19 +38,18 @@ Automate_non_deterministe mot_vide(){
 	automate.nombreEtats = 1;
 	automate.liste_etat = etat;
 	automate.etat_initial = etat;
-	automate.tab_transition = NULL;
+	automate.tab_transition = init_tab_transition(1);
 
 	return automate;
 }
 
-//A MODIFIER
-/*Renvoie un automate standard reconnaissant le langage composé d’un mot d’un caractère passé en paramètre
- * néessite également une transition (vide) en paramètre pour l'ajouter dans le tableau de transitions sans la perdre*/
-Automate_non_deterministe un_mot(char symbole,Transition* nouvelle_transition){
+//Renvoie un automate standard reconnaissant le langage composé d’un mot d’un caractère passé en paramètre
+Automate_non_deterministe un_mot(char symbole){
 	Automate_non_deterministe automate;
-	int int_symbole = symbole;
-	Etat* etat_init, etat_final;
-	Transition* transition;
+	Etat* etat_init = malloc(sizeof(Etat*));
+	Etat* etat_final = malloc(sizeof(Etat*));
+	Transition* transition = malloc(sizeof(Transition*));
+	Caractere* caractere = malloc(sizeof(Caractere*));
 
 	etat_init->num = 0;
 	etat_init->accepteur = 0;
@@ -61,38 +58,28 @@ Automate_non_deterministe un_mot(char symbole,Transition* nouvelle_transition){
 	etat_final->num = 1;
 	etat_final->accepteur = 1;
 	etat_final->etat_suivant = etat_init;
+	
+	caractere->symbole = symbole;
+	caractere->caractere_suivant = NULL;
 
 	transition->depart = etat_init;
 	transition->arrivee = etat_final;
-	transition->symbole = symbole;
+	transition->caractere = caractere;
 	transition->transitionSuivante = NULL;
 
-	automate.alphabet = init_alphabet();
-	automate.alphabet.caractere[int_symbole] = True;
+	automate.alphabet = caractere;
+	automate.nombreEtats = 2;
 	automate.liste_etat = etat_final;
 	automate.etat_initial = etat_init;
-	automate.tab_transition = init_tab_transition(1);
+	automate.tab_transition = init_tab_transition(2);
 	automate.tab_transition[0] = transition;
 
 	return automate;
 }
 
-//A MODIFIER
-//Initialise les cases du tableau de l'alphabet à False
-Alphabet init_alphabet(){
-	Alphabet alphabet;
-	int i;
-
-	for(i=0;i<TAILLE_ASCII;i++){
-		alphabet.caractere[i] = False;
-	}
-
-	return alphabet;
-}
-
 //A MODIFIER (laisse le moi)
 //Renvoie la réunion de 2 alphabets
-Alphabet reunion_alphabet(Alphabet alphabet1, Alphabet alphabet2){
+/*Alphabet reunion_alphabet(Alphabet alphabet1, Alphabet alphabet2){
 	Alphabet alphabet;
 	int i;
 
@@ -101,7 +88,7 @@ Alphabet reunion_alphabet(Alphabet alphabet1, Alphabet alphabet2){
 	}
 
 	return alphabet
-}
+}*/
 
 
 //Création d'un tableau de listes de transitions alloué dynamiquement
@@ -117,13 +104,12 @@ Transition** init_tab_transition(int taille){
 	return tab_transition;
 }
 
-//A MODIFIER
 //Ajoute une transition dans le tableau de transition en fonction de son état de départ
 void ajout_transition(Transition* transition, Transition** tab_transition){
-	Transition* transition_act = tab_transition[transition->depart];
+	/*Transition* transition_act = tab_transition[transition->depart];
 
 	tab_transition[transition->depart] = transition;
-	transition->transitionSuivante = transition_act;
+	transition->transitionSuivante = transition_act;*/
 
 }
 
@@ -144,8 +130,8 @@ void affichage_automate_non_deterministe(Automate_non_deterministe automate){
 	printf("\nNb états : %d \n",automate.nombreEtats);
 	printf("Etat initial : %d \n",automate.etat_initial->num);
 	printf("Etats accepteurs :");
-	etat_act = liste_etat;
-	while(etat_act != NULL && etat_act->accepteur == 1){
+	etat_act = automate.liste_etat;
+	while(etat_act != NULL && (etat_act->accepteur == 1)){
 		printf(" %d,",etat_act->num);
 		etat_act = etat_act->etat_suivant;
 	}
@@ -153,7 +139,7 @@ void affichage_automate_non_deterministe(Automate_non_deterministe automate){
 	for(i=0;i<automate.nombreEtats;i++){
 		transition_act = automate.tab_transition[i];
 		while(transition_act != NULL){
-			printf(" (%d,%c,%d),",transition_act->depart->num,transition_act->symbole->symbole,transition_act->arrivee->num);
+			printf(" (%d,%c,%d),",transition_act->depart->num,transition_act->caractere->symbole,transition_act->arrivee->num);
 			transition_act = transition_act->transitionSuivante;
 		}
 	}

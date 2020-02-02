@@ -20,14 +20,13 @@ struct Etat {
 };
 
 /* type transition défini par un état de départ, un état d'arrivée, un
- * caractère de transition et l'adresse de la transition suivante, les états
- * étant représenté par des ints.
+ * caractère de transition et l'adresse de la transition suivante.
  */
 typedef struct Transition Transition;
 struct Transition{
 	Etat* depart;
 	Etat* arrivee;
-	Caractere* symbole;
+	Caractere* caractere;
 	Transition* transitionSuivante;
 };
 
@@ -52,17 +51,13 @@ Automate_non_deterministe langage_vide();
 //Renvoie un automate non déterministe reconnaissant le mot vide
 Automate_non_deterministe mot_vide();
 
-/*Renvoie un automate standard reconnaissant le langage composé d’un mot d’un caractère passé en paramètre
- * nécessite également une transition (vide) en paramètre pour l'ajouter dans le tableau de transitions sans la perdre*/
-Automate_non_deterministe un_mot(char symbole,Transition* nouvelle_transition);
-
-//Initialise les cases du tableau de l'alphabet à False
-Alphabet init_alphabet();
+//Renvoie un automate standard reconnaissant le langage composé d’un mot d’un caractère passé en paramètre
+Automate_non_deterministe un_mot(char symbole);
 
 //Renvoie la réunion de 2 alphabets
-Alphabet reunion_alphabet(Alphabet alphabet1, Alphabet alphabet2);
+//Alphabet reunion_alphabet(Alphabet alphabet1, Alphabet alphabet2);
 
-//Création d'un tableau de transitions alloué dynamiquement et initialise les états de départ à -1
+//Création d'un tableau de transitions alloué dynamiquement
 Transition** init_tab_transition(int taille);
 
 //Ajoute une transition dans le tableau de transition en fonction de son état de départ

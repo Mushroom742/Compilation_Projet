@@ -4,14 +4,13 @@
 #include "automate_deterministe.h"
 
 int main (){
-	Automate_non_deterministe auto_langage_vide;
-	Transition transition;
+	Automate_non_deterministe automate;
 
-	auto_langage_vide = un_mot('X',&transition);
+	automate = un_mot('a');
 
-	affichage_automate_non_deterministe(auto_langage_vide);
+	affichage_automate_non_deterministe(automate);
 	
-	free(auto_langage_vide.tab_transition);
+	//free(auto_langage_vide.tab_transition);
 
 	return 0;
 }
