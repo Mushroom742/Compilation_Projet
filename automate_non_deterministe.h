@@ -53,7 +53,7 @@ Automate_non_deterministe langage_vide();
 Automate_non_deterministe mot_vide();
 
 /*Renvoie un automate standard reconnaissant le langage composé d’un mot d’un caractère passé en paramètre
- * néessite également une transition (vide) en paramètre pour l'ajouter dans le tableau de transitions sans la perdre*/
+ * nécessite également une transition (vide) en paramètre pour l'ajouter dans le tableau de transitions sans la perdre*/
 Automate_non_deterministe un_mot(char symbole,Transition* nouvelle_transition);
 
 //Initialise les cases du tableau de l'alphabet à False

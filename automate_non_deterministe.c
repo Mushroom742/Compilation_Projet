@@ -10,13 +10,17 @@
 //Renvoie un automate non déterministe reconnaissant le langage vide
 Automate_non_deterministe langage_vide(){
 	Automate_non_deterministe automate;
+	Etat* etat;
 
-	automate.alphabet = init_alphabet();
+	etat->num = 0;
+	etat->accepteur = 0;
+	etat->etat_suivant = NULL;
+
+	automate.alphabet = NULL;
 	automate.nombreEtats = 1;
-	automate.nombreEtatsFinaux = 0;
-	automate.etat_initial = 0;
-	automate.liste_etats_accepteurs = NULL;
-	automate.tab_transition = init_tab_transition(1);
+	automate.liste_etat = etat;
+	automate.etat_initial = etat;
+	automate.tab_transition = NULL;
 
 	return automate;
 
@@ -26,14 +30,17 @@ Automate_non_deterministe langage_vide(){
 //Renvoie un automate non déterministe reconnaissant le mot vide
 Automate_non_deterministe mot_vide(){
 	Automate_non_deterministe automate;
+	Etat* etat;
 
-	automate.alphabet = init_alphabet();
+	etat->num = 0;
+	etat->accepteur = 1;
+	etat->etat_suivant = NULL;
+
+	automate.alphabet = NULL;
 	automate.nombreEtats = 1;
-	automate.nombreEtatsFinaux = 1;
-	automate.etat_initial = 0;
-	automate.liste_etats_accepteurs = alloc_tab_etat(1);
-	automate.liste_etats_accepteurs[0] = 0;
-	automate.tab_transition = init_tab_transition(1);
+	automate.liste_etat = etat;
+	automate.etat_initial = etat;
+	automate.tab_transition = NULL;
 
 	return automate;
 }
@@ -44,21 +51,28 @@ Automate_non_deterministe mot_vide(){
 Automate_non_deterministe un_mot(char symbole,Transition* nouvelle_transition){
 	Automate_non_deterministe automate;
 	int int_symbole = symbole;
+	Etat* etat_init, etat_final;
+	Transition* transition;
+
+	etat_init->num = 0;
+	etat_init->accepteur = 0;
+	etat_init->etat_suivant = NULL;
+
+	etat_final->num = 1;
+	etat_final->accepteur = 1;
+	etat_final->etat_suivant = etat_init;
+
+	transition->depart = etat_init;
+	transition->arrivee = etat_final;
+	transition->symbole = symbole;
+	transition->transitionSuivante = NULL;
 
 	automate.alphabet = init_alphabet();
 	automate.alphabet.caractere[int_symbole] = True;
-	automate.nombreEtats = 2;
-	automate.nombreEtatsFinaux = 1;
-	automate.etat_initial = 0;
-	automate.liste_etats_accepteurs = alloc_tab_etat(1);
-	automate.liste_etats_accepteurs[0] = 1;
-	automate.tab_transition = init_tab_transition(2);
-	
-	nouvelle_transition->depart = 0;
-	nouvelle_transition->arrivee = 1;
-	nouvelle_transition->symbole = symbole;
-	
-	ajout_transition(nouvelle_transition,automate.tab_transition);
+	automate.liste_etat = etat_final;
+	automate.etat_initial = etat_init;
+	automate.tab_transition = init_tab_transition(1);
+	automate.tab_transition[0] = transition;
 
 	return automate;
 }
@@ -81,11 +95,11 @@ Alphabet init_alphabet(){
 Alphabet reunion_alphabet(Alphabet alphabet1, Alphabet alphabet2){
 	Alphabet alphabet;
 	int i;
-	
+
 	for(i=0;i<TAILLE_ASCII;i++){
 		alphabet.caractere[i] = alphabet1.caractere[i] | alphabet2.caractere[i];
 	}
-	
+
 	return alphabet
 }
 
@@ -107,10 +121,10 @@ Transition** init_tab_transition(int taille){
 //Ajoute une transition dans le tableau de transition en fonction de son état de départ
 void ajout_transition(Transition* transition, Transition** tab_transition){
 	Transition* transition_act = tab_transition[transition->depart];
-	
+
 	tab_transition[transition->depart] = transition;
 	transition->transitionSuivante = transition_act;
-	
+
 }
 
 
@@ -120,7 +134,7 @@ void affichage_automate_non_deterministe(Automate_non_deterministe automate){
 	Transition* transition_act;
 	Caractere* caractere_act;
 	Etat* etat_act;
-	
+
 	printf("Alphabet :");
 	caractere_act = automate.alphabet;
 	while(caractere_act != NULL){
@@ -145,13 +159,13 @@ void affichage_automate_non_deterministe(Automate_non_deterministe automate){
 	}
 	printf("\n");
 }
-	
+
 //A MODIFIER
 //Renvoie un automate standard reconnaissant la réunion des langages des 2 automates passés en paramètre
 Automate_non_deterministe reunion(Automate_non_deterministe automate1, Automate_non_deterministe automate2){
 	Automate_non_deterministe automate;
 	int i;
-	
+
 	/*automate.alphabet = reunion_alphabet(automate1.alphabet,automate2.alphabet);
 	automate.nombreEtats = automate1.nombreEtats + automate2.nombreEtats - 1;
 	automate.etat_initial = 0;
@@ -165,10 +179,9 @@ Automate_non_deterministe reunion(Automate_non_deterministe automate1, Automate_
 			automate.liste_etats_accepteurs[i] = automate2.liste_etats_accepteurs[i - automate1.nombreEtatsFinaux] + automate1.nombreEtatsFinaux;
 		}
 	}*/
-	
-	
-	
-	
-	
-}
 
+
+
+
+
+}
