@@ -86,13 +86,13 @@ void reunion_alphabet(Caractere* alphabet1, Caractere* alphabet2){
 	Caractere* caract_act2 = alphabet2;
 	Caractere* tmp1 = NULL;
 	Caractere* tmp2 = NULL;
-	
+
 	while(caract_act2 != NULL){
 		if(caract_act1 == NULL){//alphabet1 fini
 			caract_act1 = caract_act2;
 			return;
 		}
-		
+
 		//tri fusion
 		while(caract_act1->caractere_suivant != NULL && caract_act1->caractere_suivant->symbole < caract_act2->symbole){
 			caract_act1 = caract_act1->caractere_suivant;
@@ -159,6 +159,12 @@ void affichage_automate_non_deterministe(Automate_non_deterministe* automate){
 		printf(" %d,",etat_act->num);
 		etat_act = etat_act->etat_suivant;
 	}
+	printf("\nListe etats:");
+	etat_act = automate->liste_etat;
+	while(etat_act != NULL){
+		printf(" %d,",etat_act->num);
+		etat_act = etat_act->etat_suivant;
+	}
 	printf("\nTransitions :");
 	for(i=0;i<automate->nombreEtats;i++){
 		transition_act = automate->tab_transition[i];
@@ -177,10 +183,10 @@ void reunion(Automate_non_deterministe* automate1, Automate_non_deterministe* au
 	int i,nb_etat;
 	Transition* trans_act = NULL;
 	Transition* trans_tmp = NULL;
-	
-	
+
+
 	reunion_alphabet(automate1->alphabet,automate2->alphabet);
-	
+
 	//on ajoute les états de l'automate 2 à la fin des états accepteurs de l'automate 1 et on modifie leur numéro
 	etat_act = automate1->liste_etat;
 	while(etat_act->etat_suivant != NULL && etat_act->etat_suivant->accepteur == 1){
@@ -196,14 +202,14 @@ void reunion(Automate_non_deterministe* automate1, Automate_non_deterministe* au
 			etat_act->etat_suivant->num = etat_act->etat_suivant->num + automate1->nombreEtats - 1;
 			etat_act = etat_act->etat_suivant;
 		}
-		
+
 	}
 	etat_act->etat_suivant = etat_tmp;
-	
+
 	//on change le nombre d'états de l'automate 1
 	nb_etat = automate1->nombreEtats;
 	automate1->nombreEtats = automate1->nombreEtats + automate2->nombreEtats - 1;
-	
+
 	//réallocation du tableau de transition + remplissage avec les transitions de l'automate 2
 	automate1->tab_transition = (Transition**) realloc(automate1->tab_transition, automate1->nombreEtats * sizeof(Transition*));
 
@@ -228,9 +234,9 @@ void reunion(Automate_non_deterministe* automate1, Automate_non_deterministe* au
 			}
 		}
 	}
-	
-	//si état initial de l'automate 2 est accepteur, on rend l'état initial 
-	//accepteur de l'automate 1 et on met l'état au bon endroit dans la liste			
+
+	//si état initial de l'automate 2 est accepteur, on rend l'état initial
+	//accepteur de l'automate 1 et on met l'état au bon endroit dans la liste
 	if(automate1->etat_initial->accepteur == 0 && automate2->etat_initial->accepteur == 1){
 		automate1->etat_initial->accepteur = 1;
 		etat_act = automate1->liste_etat;
@@ -243,13 +249,78 @@ void reunion(Automate_non_deterministe* automate1, Automate_non_deterministe* au
 			automate1->liste_etat = automate1->etat_initial;
 			automate1->etat_initial->etat_suivant = etat_tmp;
 		}
-			
+
 	}
-	
+
 	free(automate2->etat_initial);
 
 }
 
+//Renvoie un automate standard reconnaissant la concaténation des langages des 2 automates passés en paramètre
+void concatenation(Automate_non_deterministe* automate1, Automate_non_deterministe* automate2){
+	Etat* etat_act = NULL;
+	Etat* etat_tmp = NULL;
+	int i;
+	Transition* trans_act = NULL;
+	Transition* trans_tmp = NULL;
+
+	reunion_alphabet(automate1->alphabet,automate2->alphabet);
+
+	etat_act = automate1->liste_etat;
+	trans_act = automate2->tab_transition[automate2->etat_initial->num];
+
+	//Pour tout les états
+	while(etat_act != NULL){
+		//S'il est accepteur
+		if(etat_act->accepteur == 1){
+			//On récupère les transitions de l'etat initial de l'automate2
+			while(trans_act != NULL){
+				trans_act->depart = etat_act;
+				trans_tmp = automate1->tab_transition[etat_act->num];
+				automate1->tab_transition[etat_act->num] = trans_act;
+				trans_act->transitionSuivante = trans_tmp;
+
+				trans_act = trans_act->transitionSuivante;
+			}
+			trans_act = automate2->tab_transition[automate2->etat_initial->num];
+			//Si l'état initial de l'automate2 n'est pas accepteur
+			if(automate2->etat_initial->accepteur == 0){
+				//Les finaux de l'automate1 ne le sont plus
+				etat_act->accepteur = 0;
+			}
+		}
+		etat_act = etat_act->etat_suivant;
+	}
+
+	etat_act = automate1->liste_etat;
+	while(etat_act->etat_suivant != NULL && etat_act->etat_suivant->accepteur == 1){
+		etat_act = etat_act->etat_suivant;
+	}
+	etat_tmp = etat_act->etat_suivant;
+	etat_act->etat_suivant = automate2->liste_etat;
+	for(i=0;i<automate2->nombreEtats;i++){
+		if(etat_act->etat_suivant == automate2->etat_initial){
+			etat_act->etat_suivant = automate2->etat_initial->etat_suivant;
+		}
+		else{
+			etat_act->etat_suivant->num = etat_act->etat_suivant->num + automate1->nombreEtats - 1;
+			etat_act = etat_act->etat_suivant;
+		}
+
+	}
+	etat_act->etat_suivant = etat_tmp;
+
+	//on change le nombre d'états de l'automate 1
+	automate1->nombreEtats = automate1->nombreEtats + automate2->nombreEtats - 1;
+
+	//réallocation du tableau de transition + remplissage avec les transitions de l'automate 2
+	automate1->tab_transition = (Transition**) realloc(automate1->tab_transition, automate1->nombreEtats * sizeof(Transition*));
+
+	//suppressions de l'init de automate2
+	free(automate2->etat_initial);
+}
+
+//free un automate
 void free_automate(Automate_non_deterministe* automate){
 	int i;
 	Transition* transition_act;

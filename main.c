@@ -10,13 +10,13 @@ int main (){
 
 	auto1 = un_mot('a');
 	affichage_automate_non_deterministe(auto1);
-	
+
 	auto2 = un_mot('a');
 	affichage_automate_non_deterministe(auto2);
-	
-	reunion(auto1,auto2);
+
+	concatenation(auto1,auto2);
 	affichage_automate_non_deterministe(auto1);
-	
+
 	free_automate(auto1);
 
 	return 0;

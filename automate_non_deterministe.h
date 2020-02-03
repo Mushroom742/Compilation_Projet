@@ -71,6 +71,9 @@ void affichage_automate_non_deterministe(Automate_non_deterministe* automate);
 //Renvoie un automate standard reconnaissant la réunion des langages des 2 automates passés en paramètre
 void reunion(Automate_non_deterministe* automate1, Automate_non_deterministe* automate2);
 
+//Renvoie un automate standard reconnaissant la concaténation des langages des 2 automates passés en paramètre
+void concatenation(Automate_non_deterministe* automate1, Automate_non_deterministe* automate2);
+
 //free un automate
 void free_automate(Automate_non_deterministe* automate);
 
