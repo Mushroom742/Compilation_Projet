@@ -88,10 +88,6 @@ void reunion_alphabet(Caractere* alphabet1, Caractere* alphabet2){
 	Caractere* tmp2 = NULL;
 
 	while(caract_act2 != NULL){
-		if(caract_act1 == NULL){//alphabet1 fini
-			caract_act1 = caract_act2;
-			return;
-		}
 
 		//tri fusion
 		while(caract_act1->caractere_suivant != NULL && caract_act1->caractere_suivant->symbole < caract_act2->symbole){
@@ -184,27 +180,66 @@ void reunion(Automate_non_deterministe* automate1, Automate_non_deterministe* au
 	Transition* trans_act = NULL;
 	Transition* trans_tmp = NULL;
 
-
-	reunion_alphabet(automate1->alphabet,automate2->alphabet);
-
-	//on ajoute les états de l'automate 2 à la fin des états accepteurs de l'automate 1 et on modifie leur numéro
-	etat_act = automate1->liste_etat;
-	while(etat_act->etat_suivant != NULL && etat_act->etat_suivant->accepteur == 1){
-		etat_act = etat_act->etat_suivant;
+	if(automate1->alphabet == NULL){//si pas d'alphabet 1, on prend le 2
+		automate1->alphabet = automate2->alphabet;
 	}
-	etat_tmp = etat_act->etat_suivant;
-	etat_act->etat_suivant = automate2->liste_etat;
-	for(i=0;i<automate2->nombreEtats;i++){
-		if(etat_act->etat_suivant == automate2->etat_initial){
-			etat_act->etat_suivant = automate2->etat_initial->etat_suivant;
+	else{//sinon on fait la réunion des 2
+		reunion_alphabet(automate1->alphabet,automate2->alphabet);
+	}
+	
+	
+	
+	//ajout des etats de l'automate 2 dans l'automate 1
+	
+	if(automate1->liste_etat->accepteur == 0){ //si l'automate 1 n'a pas d'états accepteurs, on ajoute au début en modifiant les numéros
+		etat_tmp = automate1->liste_etat;
+		if(automate2->liste_etat == automate2->etat_initial) {
+			automate1->liste_etat = automate2->liste_etat->etat_suivant;
 		}
 		else{
-			etat_act->etat_suivant->num = etat_act->etat_suivant->num + automate1->nombreEtats - 1;
+			automate1->liste_etat = automate2->liste_etat;
+			automate1->liste_etat->num = automate1->liste_etat->num + automate1->nombreEtats - 1;
+		}
+		etat_act = automate1->liste_etat;
+		for(i=0;i<automate2->nombreEtats-1;i++){
+			if(etat_act->etat_suivant == automate2->etat_initial){
+				etat_act->etat_suivant = automate2->etat_initial->etat_suivant;
+			}
+			else{
+				etat_act->etat_suivant->num = etat_act->etat_suivant->num + automate1->nombreEtats - 1;
+				etat_act = etat_act->etat_suivant;
+			}
+
+		}
+		if(etat_act == NULL){//si automate 2 n'a qu'un état initial
+			automate1->liste_etat = etat_tmp;
+		}
+		else{
+			etat_act->etat_suivant = etat_tmp;
+		}
+	}
+	
+	else {
+
+		//sinon on ajoute les états de l'automate 2 à la fin des états accepteurs de l'automate 1 et on modifie leur numéro
+		etat_act = automate1->liste_etat;
+		while(etat_act->etat_suivant != NULL && etat_act->etat_suivant->accepteur == 1){
 			etat_act = etat_act->etat_suivant;
 		}
+		etat_tmp = etat_act->etat_suivant;
+		etat_act->etat_suivant = automate2->liste_etat;
+		for(i=0;i<automate2->nombreEtats;i++){
+			if(etat_act->etat_suivant == automate2->etat_initial){
+				etat_act->etat_suivant = automate2->etat_initial->etat_suivant;
+			}
+			else{
+				etat_act->etat_suivant->num = etat_act->etat_suivant->num + automate1->nombreEtats - 1;
+				etat_act = etat_act->etat_suivant;
+			}
 
+		}
+		etat_act->etat_suivant = etat_tmp;
 	}
-	etat_act->etat_suivant = etat_tmp;
 
 	//on change le nombre d'états de l'automate 1
 	nb_etat = automate1->nombreEtats;
