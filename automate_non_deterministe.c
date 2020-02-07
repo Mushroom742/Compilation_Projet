@@ -80,7 +80,7 @@ Automate_non_deterministe* un_mot(char symbole){
 	return automate;
 }
 
-//Ajoute l'alphabet 2 dans l'alphabet 1
+//Ajoute l'alphabet 2 dans l'alphabet 1 (si alphabet 1 n'est pas vide)
 void reunion_alphabet(Caractere* alphabet1, Caractere* alphabet2){
 	Caractere* caract_act1 = alphabet1;
 	Caractere* caract_act2 = alphabet2;
@@ -172,7 +172,7 @@ void affichage_automate_non_deterministe(Automate_non_deterministe* automate){
 	printf("\n\n");
 }
 
-//Renvoie un automate standard reconnaissant la réunion des langages des 2 automates passés en paramètre
+//Réunion des automates 1 et 2 dans l'automate 1
 void reunion(Automate_non_deterministe* automate1, Automate_non_deterministe* automate2){
 	Etat* etat_act = NULL;
 	Etat* etat_tmp = NULL;
@@ -354,6 +354,49 @@ void concatenation(Automate_non_deterministe* automate1, Automate_non_determinis
 	//suppressions de l'init de automate2
 	free(automate2->etat_initial);
 }
+
+//Mise à l'étoile (ou fermeture itérative de Kleene) de l'automate
+void mise_etoile(Automate_non_deterministe* automate){
+	Etat* etat_act = NULL;
+	Etat* etat_tmp = NULL;
+	Transition* transition_act = NULL;
+	Transition* nouvelle_transition = NULL;
+	
+	etat_act = automate->liste_etat;
+	while(etat_act != NULL && etat_act->accepteur == 1){ //pour chaque état accepteur
+		transition_act = automate->tab_transition[automate->etat_initial->num];
+		while(transition_act != NULL){//on ajoute les transitions de l'état initial
+			nouvelle_transition = malloc(sizeof(Transition));
+			nouvelle_transition->depart = etat_act;
+			nouvelle_transition->arrivee = transition_act->arrivee;
+			nouvelle_transition->caractere = transition_act->caractere;
+			nouvelle_transition->transitionSuivante = NULL;
+			
+			ajout_transition(nouvelle_transition,automate->tab_transition);
+			
+			transition_act = transition_act->transitionSuivante;
+		}
+		
+		etat_act = etat_act->etat_suivant;
+	}
+	
+	//on rend l'état initial accepteur et on le met au bon endroit dans la liste
+	if(automate->etat_initial->accepteur == 0){
+		automate->etat_initial->accepteur = 1;
+		etat_act = automate->liste_etat;
+		if(etat_act != automate->etat_initial){
+			while(etat_act->etat_suivant != automate->etat_initial){
+				etat_act = etat_act->etat_suivant;
+			}
+			etat_act->etat_suivant = automate->etat_initial->etat_suivant;
+			etat_tmp = automate->liste_etat;
+			automate->liste_etat = automate->etat_initial;
+			automate->etat_initial->etat_suivant = etat_tmp;
+		}
+
+	}
+}
+
 
 //free un automate
 void free_automate(Automate_non_deterministe* automate){

@@ -11,10 +11,11 @@ int main (){
 	auto1 = un_mot('a');
 	affichage_automate_non_deterministe(auto1);
 
-	auto2 = un_mot('a');
+	auto2 = un_mot('b');
 	affichage_automate_non_deterministe(auto2);
 
 	reunion(auto1,auto2);
+	mise_etoile(auto1);
 	affichage_automate_non_deterministe(auto1);
 
 	free_automate(auto1);

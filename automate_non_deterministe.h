@@ -56,7 +56,7 @@ Automate_non_deterministe* mot_vide();
 //Renvoie un automate standard reconnaissant le langage composé d’un mot d’un caractère passé en paramètre
 Automate_non_deterministe* un_mot(char symbole);
 
-//Renvoie la réunion de 2 alphabets
+//Ajoute l'alphabet 2 dans l'alphabet 1 (si alphabet 1 n'est pas vide)
 void reunion_alphabet(Caractere* alphabet1, Caractere* alphabet2);
 
 //Création d'un tableau de transitions alloué dynamiquement
@@ -68,11 +68,14 @@ void ajout_transition(Transition* transition, Transition** tab_transition);
 //Affiche un automate
 void affichage_automate_non_deterministe(Automate_non_deterministe* automate);
 
-//Renvoie un automate standard reconnaissant la réunion des langages des 2 automates passés en paramètre
+//Réunion des automates 1 et 2 dans l'automate 1
 void reunion(Automate_non_deterministe* automate1, Automate_non_deterministe* automate2);
 
 //Renvoie un automate standard reconnaissant la concaténation des langages des 2 automates passés en paramètre
 void concatenation(Automate_non_deterministe* automate1, Automate_non_deterministe* automate2);
+
+//Mise à l'étoile (ou fermeture itérative de Kleene) de l'automate
+void mise_etoile(Automate_non_deterministe* automate);
 
 //free un automate
 void free_automate(Automate_non_deterministe* automate);
