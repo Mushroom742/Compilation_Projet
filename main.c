@@ -37,7 +37,7 @@ int main (){
 	
 	reunion(auto4,auto5);
 	affichage_automate_non_deterministe(auto4);
-	concatenation(auto1,auto4);
+	reunion(auto1,auto4);
 	affichage_automate_non_deterministe(auto1);
 	
 	auto6 = determinisation(auto1);
