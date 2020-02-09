@@ -3,11 +3,12 @@
 
 #define TAILLE_ASCII 128
 
-/* type caractère défini par un symbole et le caractere suivant dans la liste
+/* type caractère défini par un symbole, un numéro et le caractere suivant dans la liste
  */
 typedef struct Caractere Caractere;
 struct Caractere {
 	char symbole;
+	int numero;
 	Caractere* caractere_suivant;
 };
 
