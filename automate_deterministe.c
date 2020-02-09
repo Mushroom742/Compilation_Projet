@@ -127,31 +127,31 @@ Automate_deterministe* determinisation(Automate_non_deterministe* automate_nd){
 				groupe_etat_tmp = groupe_etat_act->groupe_etat_suivant;
 				groupe_etat_act->groupe_etat_suivant = automate_d->tab_transition[groupe_etat_act->numero][i];
 				automate_d->tab_transition[groupe_etat_act->numero][i]->groupe_etat_suivant = groupe_etat_tmp;
-				
+
 				//changement de numéro
 				automate_d->tab_transition[groupe_etat_act->numero][i]->numero = automate_d->nb_groupe_etat;
-				
+
 				//réallocation du tableau de transitions
 				automate_d->tab_transition = realloc(automate_d->tab_transition,(automate_d->nb_groupe_etat + 1) * sizeof(Groupe_etat**));
 				automate_d->tab_transition[automate_d->nb_groupe_etat] = malloc(nb_caractere * sizeof(Groupe_etat*));
 				for(j=0;j<nb_caractere;j++){
 					automate_d->tab_transition[automate_d->nb_groupe_etat][j] = NULL;
 				}
-				
+
 				//changement du nombre de groupes d'état
 				automate_d->nb_groupe_etat++;
 			}
 			else {//le groupe est déjà présent dans la liste
 				//on le free
 				free_groupe_etat(automate_d->tab_transition[groupe_etat_act->numero][i]);
-				
+
 				//on le remplace par le bon groupe
 				automate_d->tab_transition[groupe_etat_act->numero][i] = groupe_etat_match;
 			}
 		}
 		groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
 	}
-	
+
 	//tri de la liste des groupes d'état pour mettre les accepteurs en 1er
 	groupe_etat_act = automate_d->liste_groupe_etat;
 	while(groupe_etat_act != NULL && groupe_etat_act->groupe_etat_suivant != NULL){
@@ -164,8 +164,8 @@ Automate_deterministe* determinisation(Automate_non_deterministe* automate_nd){
 		}
 		groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
 	}
-		
-	
+
+
 	return automate_d;
 }
 
@@ -226,12 +226,12 @@ void ajout_etat(Etat* etat, Groupe_etat* groupe_etat){
 
 	return;
 }
-	
+
 //Regarde si le groupe d'état est déjà présent dans la liste, si c'est le cas renvoie le match, sinon NULL
 Groupe_etat* match_groupe_etat(Groupe_etat* groupe_etat,Groupe_etat* liste_groupe_etat){
 	Groupe_etat* groupe_etat_act = liste_groupe_etat;
 	int match,i;
-	
+
 	//on parcourt la liste
 	while(groupe_etat_act != NULL){
 		if(groupe_etat_act->nb_etat == groupe_etat->nb_etat && groupe_etat_act->accepteur == groupe_etat->accepteur){
@@ -248,10 +248,10 @@ Groupe_etat* match_groupe_etat(Groupe_etat* groupe_etat,Groupe_etat* liste_group
 				return groupe_etat_act;
 			}
 		}
-		
+
 		groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
 	}
-	
+
 	return NULL;
 }
 
@@ -265,7 +265,7 @@ void free_groupe_etat(Groupe_etat* groupe_etat){
 //Free un automate déterministe
 void free_auto_deterministe(Automate_deterministe* automate){
 	int i;
-	
+
 	for(i=0;i<automate->nb_groupe_etat;i++){
 		free(automate->tab_transition[i]);
 	}
@@ -327,4 +327,3 @@ void affichage_auto_deterministe(Automate_deterministe* automate){
 	}
 	printf("\n\n");
 }
-

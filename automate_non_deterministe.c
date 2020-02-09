@@ -307,29 +307,6 @@ void concatenation(Automate_non_deterministe* automate1, Automate_non_determinis
 	etat_act = automate1->liste_etat;
 	trans_act = automate2->tab_transition[automate2->etat_initial->num];
 
-	//Pour tout les états
-	while(etat_act != NULL){
-		//S'il est accepteur
-		if(etat_act->accepteur == 1){
-			//On récupère les transitions de l'etat initial de l'automate2
-			while(trans_act != NULL){
-				trans_act->depart = etat_act;
-				trans_tmp = automate1->tab_transition[etat_act->num];
-				automate1->tab_transition[etat_act->num] = trans_act;
-				trans_act->transitionSuivante = trans_tmp;
-
-				trans_act = trans_act->transitionSuivante;
-			}
-			trans_act = automate2->tab_transition[automate2->etat_initial->num];
-			//Si l'état initial de l'automate2 n'est pas accepteur
-			if(automate2->etat_initial->accepteur == 0){
-				//Les finaux de l'automate1 ne le sont plus
-				etat_act->accepteur = 0;
-			}
-		}
-		etat_act = etat_act->etat_suivant;
-	}
-
 	//ajout des etats de l'automate 2 dans l'automate 1
 
 	if(automate1->liste_etat->accepteur == 0){ //si l'automate 1 n'a pas d'états accepteurs, on ajoute au début en modifiant les numéros
@@ -387,6 +364,29 @@ void concatenation(Automate_non_deterministe* automate1, Automate_non_determinis
 
 	//réallocation du tableau de transition + remplissage avec les transitions de l'automate 2
 	automate1->tab_transition = (Transition**) realloc(automate1->tab_transition, automate1->nombreEtats * sizeof(Transition*));
+
+	//Pour tout les états
+	while(etat_act != NULL){
+		//S'il est accepteur
+		if(etat_act->accepteur == 1){
+			//On récupère les transitions de l'etat initial de l'automate2
+			while(trans_act != NULL){
+				trans_act->depart = etat_act;
+				trans_tmp = automate1->tab_transition[etat_act->num];
+				automate1->tab_transition[etat_act->num] = trans_act;
+				trans_act->transitionSuivante = trans_tmp;
+
+				trans_act = trans_act->transitionSuivante;
+			}
+			trans_act = automate2->tab_transition[automate2->etat_initial->num];
+			//Si l'état initial de l'automate2 n'est pas accepteur
+			if(automate2->etat_initial->accepteur == 0){
+				//Les finaux de l'automate1 ne le sont plus
+				etat_act->accepteur = 0;
+			}
+		}
+		etat_act = etat_act->etat_suivant;
+	}
 
 	//suppressions de l'init de automate2
 	free(automate2->etat_initial);
