@@ -9,9 +9,11 @@ Automate_deterministe* determinisation(Automate_non_deterministe* automate_nd){
 	Caractere* caractere_act;
 	Groupe_etat* groupe_etat = NULL;
 	Groupe_etat* groupe_etat_act = NULL;
+	Groupe_etat* groupe_etat_match = NULL;
+	Groupe_etat* groupe_etat_tmp = NULL;
 	Etat* etat_act = NULL;
 	Transition* transition_act = NULL;
-	int i,nb_caractere;
+	int i,j,nb_caractere;
 	
 	automate_d->alphabet = automate_nd->alphabet;
 	//numérotation des caractères
@@ -22,6 +24,8 @@ Automate_deterministe* determinisation(Automate_non_deterministe* automate_nd){
 		nb_caractere++;
 		caractere_act = caractere_act->caractere_suivant;
 	}
+	
+	
 	
 	//initialisation du 1er groupe d'état
 	groupe_etat = creation_groupe_etat(automate_nd->etat_initial);
@@ -44,26 +48,78 @@ Automate_deterministe* determinisation(Automate_non_deterministe* automate_nd){
 		//parcours des états du groupe d'états
 		for(i=0;i<groupe_etat_act->nb_etat;i++){
 			etat_act = groupe_etat_act->tab_etat[i];
-			//parcours des transitions de l'état
-			transition_act = automate_nd->tab_transition[etat_act->num];
-			while(transition_act != NULL){
-				//si le groupe d'état n'existe pas
-				if(automate_d->tab_transition[groupe_etat_act->numero][transition_act->caractere->numero] == NULL){
-					//création du groupe d'état
-					groupe_etat = creation_groupe_etat(transition_act->arrivee);
-					automate_d->tab_transition[groupe_etat_act->numero][transition_act->caractere->numero] = groupe_etat;
+			if(etat_act != NULL){ //si ce n'est pas l'état mort
+				//parcours des transitions de l'état
+				transition_act = automate_nd->tab_transition[etat_act->num];
+				while(transition_act != NULL){
+					//si le groupe d'état n'existe pas
+					if(automate_d->tab_transition[groupe_etat_act->numero][transition_act->caractere->numero] == NULL){
+						//création du groupe d'état
+						automate_d->tab_transition[groupe_etat_act->numero][transition_act->caractere->numero] = creation_groupe_etat(transition_act->arrivee);
+					}
+					else{//le groupe d'état existe déjà
+						//on ajoute l'état au groupe d'état
+						ajout_etat(transition_act->arrivee,automate_d->tab_transition[groupe_etat_act->numero][transition_act->caractere->numero]);
+					}
+					transition_act = transition_act->transitionSuivante;
 				}
-				else{//le groupe d'état existe déjà
-					//on ajoute l'état au groupe d'état
-					ajout_etat(transition_act->arrivee,automate_d->tab_transition[groupe_etat_act->numero][transition_act->caractere->numero]);
+			}
+			else { //état mort
+				for(j=0;j<nb_caractere;j++){
+					automate_d->tab_transition[groupe_etat_act->numero][j] = creation_groupe_etat(NULL);
 				}
-				transition_act = transition_act->transitionSuivante;
 			}
 		}
 		//on parcourt la ligne et on regarde les nouveaux groupes d'état
-		
+		for(i=0;i<nb_caractere;i++){
+			if(automate_d->tab_transition[groupe_etat_act->numero][i] == NULL){ //création de l'état mort
+				automate_d->tab_transition[groupe_etat_act->numero][i] = creation_groupe_etat(NULL);
+			}
+			groupe_etat_match = match_groupe_etat(automate_d->tab_transition[groupe_etat_act->numero][i],automate_d->liste_groupe_etat);
+			//si le groupe d'état n'est pas déjà présent, on l'ajoute à la liste
+			if(groupe_etat_match == NULL){
+				//ajout à la liste
+				groupe_etat_tmp = groupe_etat_act->groupe_etat_suivant;
+				groupe_etat_act->groupe_etat_suivant = automate_d->tab_transition[groupe_etat_act->numero][i];
+				automate_d->tab_transition[groupe_etat_act->numero][i]->groupe_etat_suivant = groupe_etat_tmp;
+				
+				//changement de numéro
+				automate_d->tab_transition[groupe_etat_act->numero][i]->numero = automate_d->nb_groupe_etat;
+				
+				//réallocation du tableau de transitions
+				automate_d->tab_transition = realloc(automate_d->tab_transition,(automate_d->nb_groupe_etat + 1) * sizeof(Groupe_etat**));
+				automate_d->tab_transition[automate_d->nb_groupe_etat] = malloc(nb_caractere * sizeof(Groupe_etat*));
+				for(j=0;j<nb_caractere;j++){
+					automate_d->tab_transition[automate_d->nb_groupe_etat][j] = NULL;
+				}
+				
+				//changement du nombre de groupes d'état
+				automate_d->nb_groupe_etat++;
+			}
+			else {//le groupe est déjà présent dans la liste
+				//on le free
+				free_groupe_etat(automate_d->tab_transition[groupe_etat_act->numero][i]);
+				
+				//on le remplace par le bon groupe
+				automate_d->tab_transition[groupe_etat_act->numero][i] = groupe_etat_match;
+			}
+		}
 		groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
 	}
+	
+	//tri de la liste des groupes d'état pour mettre les accepteurs en 1er
+	groupe_etat_act = automate_d->liste_groupe_etat;
+	while(groupe_etat_act != NULL && groupe_etat_act->groupe_etat_suivant != NULL){
+		if(groupe_etat_act->groupe_etat_suivant->accepteur == 1){
+			//on met le groupe suivant au début
+			groupe_etat_tmp = groupe_etat_act->groupe_etat_suivant;
+			groupe_etat_act->groupe_etat_suivant = groupe_etat_tmp->groupe_etat_suivant;
+			groupe_etat_tmp->groupe_etat_suivant = automate_d->liste_groupe_etat;
+			automate_d->liste_groupe_etat = groupe_etat_tmp;
+		}
+		groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
+	}
+		
 	
 	return automate_d;
 }
@@ -74,10 +130,16 @@ Groupe_etat* creation_groupe_etat(Etat* etat){
 	Groupe_etat* groupe_etat = malloc(sizeof(Groupe_etat));
 	
 	groupe_etat->tab_etat = malloc(sizeof(Etat*));
-	groupe_etat->tab_etat[0] = etat;
+	if(etat != NULL){
+		groupe_etat->tab_etat[0] = etat;
+		groupe_etat->accepteur = etat->accepteur;
+	}
+	else {
+		groupe_etat->tab_etat[0] = NULL;
+		groupe_etat->accepteur = 0;
+	}
 	groupe_etat->nb_etat = 1;
 	groupe_etat->numero = 0;
-	groupe_etat->accepteur = etat->accepteur;
 	groupe_etat->groupe_etat_suivant = NULL;
 	
 	return groupe_etat;
@@ -120,3 +182,103 @@ void ajout_etat(Etat* etat, Groupe_etat* groupe_etat){
 	return;
 }
 	
+//Regarde si le groupe d'état est déjà présent dans la liste, si c'est le cas renvoie le match, sinon NULL
+Groupe_etat* match_groupe_etat(Groupe_etat* groupe_etat,Groupe_etat* liste_groupe_etat){
+	Groupe_etat* groupe_etat_act = liste_groupe_etat;
+	int match,i;
+	
+	//on parcourt la liste
+	while(groupe_etat_act != NULL){
+		if(groupe_etat_act->nb_etat == groupe_etat->nb_etat && groupe_etat_act->accepteur == groupe_etat->accepteur){
+			match = 1;
+			i = 0;
+			//on parcourt les états tant qu'il y a correspondance
+			while(i < groupe_etat->nb_etat && match == 1){
+				if(groupe_etat_act->tab_etat[i] != groupe_etat->tab_etat[i]){
+					match = 0;
+				}
+				i++;
+			}
+			if(match == 1){
+				return groupe_etat_act;
+			}
+		}
+		
+		groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
+	}
+	
+	return NULL;
+}
+
+
+//Free un groupe d'état
+void free_groupe_etat(Groupe_etat* groupe_etat){
+	free(groupe_etat->tab_etat);
+	free(groupe_etat);
+}
+
+//Free un automate déterministe
+void free_auto_deterministe(Automate_deterministe* automate){
+	int i;
+	
+	for(i=0;i<automate->nb_groupe_etat;i++){
+		free(automate->tab_transition[i]);
+	}
+	free(automate->tab_transition);
+	free(automate);
+}
+
+
+//Affiche un automate déterministe
+void affichage_auto_deterministe(Automate_deterministe* automate){
+	int i,j,nb_caractere;
+	Caractere* caractere_act;
+	Groupe_etat* groupe_etat_act;
+
+	printf("Alphabet :");
+	caractere_act = automate->alphabet;
+	while(caractere_act != NULL){
+		printf(" %c,",caractere_act->symbole);
+		caractere_act = caractere_act->caractere_suivant;
+	}
+	printf("\nNb états : %d \n",automate->nb_groupe_etat);
+	printf("Etat initial : %d \n",automate->groupe_etat_initial->numero);
+	printf("Etats accepteurs :");
+	groupe_etat_act = automate->liste_groupe_etat;
+	while(groupe_etat_act != NULL && (groupe_etat_act->accepteur == 1)){
+		printf(" %d,",groupe_etat_act->numero);
+		groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
+	}
+	printf("\nListe etats:");
+	groupe_etat_act = automate->liste_groupe_etat;
+	while(groupe_etat_act != NULL){
+		printf(" %d(",groupe_etat_act->numero);
+		for(i=0;i<groupe_etat_act->nb_etat;i++){
+			if(groupe_etat_act->tab_etat[i] != NULL){
+				printf(" %d,",groupe_etat_act->tab_etat[i]->num);
+			}
+			else{
+				printf(" NULL");
+			}
+		}
+		printf("),");
+		groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
+	}
+	printf("\nTableau de transitions :\n ");
+	caractere_act = automate->alphabet;
+	nb_caractere = 0;
+	while(caractere_act != NULL){
+		printf(" %c",caractere_act->symbole);
+		nb_caractere++;
+		caractere_act = caractere_act->caractere_suivant;
+	}
+	printf("\n");
+	for(i=0;i<automate->nb_groupe_etat;i++){
+		printf("%d ",i);
+		for(j=0;j<nb_caractere;j++){
+			printf("%d ",automate->tab_transition[i][j]->numero);
+		}
+		printf("\n");
+	}
+	printf("\n\n");
+}

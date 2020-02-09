@@ -44,4 +44,16 @@ Groupe_etat* creation_groupe_etat(Etat* etat);
 //Ajoute l'état au groupe d'état s'il n'existe pas déjà
 void ajout_etat(Etat* etat, Groupe_etat* groupe_etat);
 
+//Regarde si le groupe d'état est déjà présent dans la liste, si c'est le cas renvoie le match, sinon NULL
+Groupe_etat* match_groupe_etat(Groupe_etat* groupe_etat,Groupe_etat* liste_groupe_etat);
+
+//Free un groupe d'état
+void free_groupe_etat(Groupe_etat* groupe_etat);
+
+//Free un automate déterministe
+void free_auto_deterministe(Automate_deterministe* automate);
+
+//Affiche un automate déterministe
+void affichage_auto_deterministe(Automate_deterministe* automate);
+
 #endif

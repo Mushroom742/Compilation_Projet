@@ -62,6 +62,7 @@ Automate_non_deterministe* un_mot(char symbole){
 	etat_final->etat_suivant = etat_init;
 
 	caractere->symbole = symbole;
+	caractere->numero = 0;
 	caractere->caractere_suivant = NULL;
 
 	transition->depart = etat_init;
@@ -288,6 +289,8 @@ void reunion(Automate_non_deterministe* automate1, Automate_non_deterministe* au
 	}
 
 	free(automate2->etat_initial);
+	free(automate2->tab_transition);
+	free(automate2);
 
 }
 
@@ -387,6 +390,8 @@ void concatenation(Automate_non_deterministe* automate1, Automate_non_determinis
 
 	//suppressions de l'init de automate2
 	free(automate2->etat_initial);
+	free(automate2->tab_transition);
+	free(automate2);
 }
 
 //Mise à l'étoile (ou fermeture itérative de Kleene) de l'automate
