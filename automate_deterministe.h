@@ -6,13 +6,15 @@
  * un tablau d'états
  * le nombre d'états dabs le groupe
  * le numéro du groupe d'état
+ * s'il est accepteur(1) ou non(0)
  * le groupe d'état suivant dans la liste chainée
  */
 typedef struct Groupe_etat Groupe_etat;
 struct Groupe_etat {
-	Etat* tab_etat;
+	Etat** tab_etat;
 	int nb_etat;
 	int numero;
+	int accepteur;
 	Groupe_etat* groupe_etat_suivant;
 };
 
@@ -30,8 +32,16 @@ struct Automate_deterministe {
 	Groupe_etat* liste_groupe_etat;
 	int nb_groupe_etat;
 	Groupe_etat* groupe_etat_initial;
-	Groupe_etat** tab_transition;
+	Groupe_etat*** tab_transition;
 	Automate_deterministe* automate_suivant;
 };
+
+Automate_deterministe* determinisation(Automate_non_deterministe* automate_nd);
+
+//Création d'un groupe d'état à partir d'un état
+Groupe_etat* creation_groupe_etat(Etat* etat);
+
+//Ajoute l'état au groupe d'état s'il n'existe pas déjà
+void ajout_etat(Etat* etat, Groupe_etat* groupe_etat);
 
 #endif
