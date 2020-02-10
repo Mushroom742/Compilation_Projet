@@ -10,7 +10,7 @@ int main (){
 	Automate_non_deterministe* auto3 = NULL;
 	Automate_non_deterministe* auto4 = NULL;
 	Automate_non_deterministe* auto5 = NULL;
-	
+
 	Automate_deterministe* auto6 = NULL;
 
 	auto1 = un_mot('a');
@@ -21,25 +21,28 @@ int main (){
 
 	concatenation(auto1,auto2);
 	affichage_automate_non_deterministe(auto1);
-	
+
 	auto3 = un_mot('b');
 	affichage_automate_non_deterministe(auto3);
-	
+
 	reunion(auto1,auto3);
 	affichage_automate_non_deterministe(auto1);
 	mise_etoile(auto1);
+	printf("Etoile\n");
 	affichage_automate_non_deterministe(auto1);
-	
-	/*auto4 = un_mot('b');
+
+	auto4 = un_mot('c');
 	affichage_automate_non_deterministe(auto4);
 	auto5 = mot_vide();
 	affichage_automate_non_deterministe(auto5);
-	
+
 	reunion(auto4,auto5);
 	affichage_automate_non_deterministe(auto4);
-	reunion(auto1,auto4);
-	affichage_automate_non_deterministe(auto1);*/
-	
+
+	printf("concatenation\n");
+	concatenation(auto1,auto4);
+	affichage_automate_non_deterministe(auto1);
+
 	auto6 = determinisation(auto1);
 	affichage_auto_deterministe(auto6);
 
