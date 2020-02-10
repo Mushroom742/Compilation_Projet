@@ -65,7 +65,6 @@ Automate_deterministe* determinisation(Automate_non_deterministe* automate_nd){
 	while(caractere_act != NULL){
 		caractere_act->numero = nb_caractere;
 		nb_caractere++;
-		printf("%c %d \n",caractere_act->symbole,caractere_act->numero);
 		caractere_act = caractere_act->caractere_suivant;
 	}
 
@@ -94,13 +93,10 @@ Automate_deterministe* determinisation(Automate_non_deterministe* automate_nd){
 				//parcours des transitions de l'état
 				transition_act = automate_nd->tab_transition[etat_act->num];
 				while(transition_act != NULL){
-					printf("transition : %d %c %d  n° %d \n",transition_act->depart->num,transition_act->caractere->symbole,transition_act->arrivee->num,transition_act->caractere->numero);
-					printf("(%d,%d) : %p \n",groupe_etat_act->numero,transition_act->caractere->numero,automate_d->tab_transition[groupe_etat_act->numero][transition_act->caractere->numero]);
 					//si le groupe d'état n'existe pas
 					if(automate_d->tab_transition[groupe_etat_act->numero][transition_act->caractere->numero] == NULL){
 						//création du groupe d'état
 						automate_d->tab_transition[groupe_etat_act->numero][transition_act->caractere->numero] = creation_groupe_etat(transition_act->arrivee);
-						printf("creation \n");
 					}
 					else{//le groupe d'état existe déjà
 						//on ajoute l'état au groupe d'état

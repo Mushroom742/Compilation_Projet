@@ -57,8 +57,8 @@ Automate_non_deterministe* mot_vide();
 //Renvoie un automate standard reconnaissant le langage composé d’un mot d’un caractère passé en paramètre
 Automate_non_deterministe* un_mot(char symbole);
 
-//Ajoute l'alphabet 2 dans l'alphabet 1 (si alphabet 1 n'est pas vide)
-void reunion_alphabet(Caractere* alphabet1, Caractere* alphabet2);
+//Ajoute l'alphabet de l'automate 2 dans l'alphabet 1 (si alphabet 1 n'est pas vide)
+void reunion_alphabet(Caractere* alphabet1, Automate_non_deterministe* automate2);
 
 //Création d'un tableau de transitions alloué dynamiquement
 Transition** init_tab_transition(int taille);

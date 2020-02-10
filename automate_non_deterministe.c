@@ -81,12 +81,14 @@ Automate_non_deterministe* un_mot(char symbole){
 	return automate;
 }
 
-//Ajoute l'alphabet 2 dans l'alphabet 1 (si alphabet 1 n'est pas vide)
-void reunion_alphabet(Caractere* alphabet1, Caractere* alphabet2){
+//Ajoute l'alphabet de l'automate 2 dans l'alphabet 1 (si alphabet 1 n'est pas vide)
+void reunion_alphabet(Caractere* alphabet1,Automate_non_deterministe* automate2){
 	Caractere* caract_act1 = alphabet1;
-	Caractere* caract_act2 = alphabet2;
+	Caractere* caract_act2 = automate2->alphabet;
 	Caractere* tmp1 = NULL;
 	Caractere* tmp2 = NULL;
+	Transition* trans_act = NULL;
+	int i;
 
 	while(caract_act2 != NULL){
 
@@ -99,7 +101,20 @@ void reunion_alphabet(Caractere* alphabet1, Caractere* alphabet2){
 			return;
 		}
 		else if(caract_act1->caractere_suivant->symbole == caract_act2->symbole){//si même caractère dans les 2 alphabets
-			caract_act2 = caract_act2->caractere_suivant;
+			//dans les transitions, on remplace le caractère de l'automate 2 par celui de l'automate1
+			for(i=0;i<automate2->nombreEtats;i++){
+				trans_act = automate2->tab_transition[i];
+				while(trans_act != NULL){
+					if(trans_act->caractere == caract_act2){
+						trans_act->caractere = caract_act1->caractere_suivant;
+					}
+					trans_act = trans_act->transitionSuivante;
+				}
+			}
+			//on free ce caractère
+			tmp1 = caract_act2->caractere_suivant;
+			free(caract_act2);
+			caract_act2 = tmp1;
 		}
 		else{//on ajoute le caractère 2 après le caractère 1 et on avance dans l'alphabet 2
 			tmp1 = caract_act1->caractere_suivant;
@@ -185,7 +200,7 @@ void reunion(Automate_non_deterministe* automate1, Automate_non_deterministe* au
 		automate1->alphabet = automate2->alphabet;
 	}
 	else{//sinon on fait la réunion des 2
-		reunion_alphabet(automate1->alphabet,automate2->alphabet);
+		reunion_alphabet(automate1->alphabet,automate2);
 	}
 
 
@@ -302,7 +317,7 @@ void concatenation(Automate_non_deterministe* automate1, Automate_non_determinis
 	Transition* trans_act = NULL;
 	Transition* trans_tmp = NULL;
 
-	reunion_alphabet(automate1->alphabet,automate2->alphabet);
+	reunion_alphabet(automate1->alphabet,automate2);
 
 	etat_act = automate1->liste_etat;
 	trans_act = automate2->tab_transition[automate2->etat_initial->num];
