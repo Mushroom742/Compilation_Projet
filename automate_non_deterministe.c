@@ -81,14 +81,55 @@ Automate_non_deterministe* un_mot(char symbole){
 	return automate;
 }
 
-//Ajoute l'alphabet de l'automate 2 dans l'alphabet 1 (si alphabet 1 n'est pas vide)
-void reunion_alphabet(Caractere* alphabet1,Automate_non_deterministe* automate2){
-	Caractere* caract_act1 = alphabet1;
-	Caractere* caract_act2 = automate2->alphabet;
+//Ajoute l'alphabet de l'automate 2 dans l'alphabet de l'automate 1
+void reunion_alphabet(Automate_non_deterministe* automate1, Automate_non_deterministe* automate2){
+	Caractere* caract_act1 = NULL;
+	Caractere* caract_act2 = NULL;
 	Caractere* tmp1 = NULL;
 	Caractere* tmp2 = NULL;
 	Transition* trans_act = NULL;
-	int i;
+	int i,nb_etat;
+	int inversion = 0;
+	
+	if(automate1->alphabet == NULL){//si pas d'alphabet 1, on prend le 2
+		automate1->alphabet = automate2->alphabet;
+		return;
+	}
+	else if(automate2->alphabet == NULL){//si pas d'alphabet 2, pas de tri à faire
+		return;
+	}
+	else if(automate1->alphabet->symbole == automate2->alphabet->symbole){//si même caractère au début
+		//dans les transitions, on remplace le caractère de l'automate 2 par celui de l'automate1
+		for(i=0;i<automate2->nombreEtats;i++){
+			trans_act = automate2->tab_transition[i];
+			while(trans_act != NULL){
+				if(trans_act->caractere == automate2->alphabet){
+					trans_act->caractere = automate1->alphabet;
+				}
+				trans_act = trans_act->transitionSuivante;
+			}
+		}
+		//on free ce caractère
+		tmp1 = automate2->alphabet->caractere_suivant;
+		free(automate2->alphabet);
+		automate2->alphabet = tmp1;
+		
+		if(automate2->alphabet == NULL){
+			return;
+		}
+	}
+	
+	if(automate1->alphabet->symbole < automate2->alphabet->symbole){//si le 1er caractère de l'alphabet 1 est plus petit que celui de l'alphabet 2
+		//on rajoute le 2 dans le 1
+		caract_act1 = automate1->alphabet;
+		caract_act2 = automate2->alphabet;
+	}
+	else {//si le 1er caractère de l'alphabet 1 est plus grand que celui de l'alphabet 2
+		//on rajoute le 1 dans le 2
+		caract_act1 = automate2->alphabet;
+		caract_act2 = automate1->alphabet;
+		inversion = 1;
+	}
 
 	while(caract_act2 != NULL){
 
@@ -98,12 +139,26 @@ void reunion_alphabet(Caractere* alphabet1,Automate_non_deterministe* automate2)
 		}
 		if(caract_act1->caractere_suivant == NULL){//si fin de l'alphabet1
 			caract_act1->caractere_suivant = caract_act2;
+			if(inversion == 1){
+				automate1->alphabet = automate2->alphabet;
+			}
 			return;
 		}
 		else if(caract_act1->caractere_suivant->symbole == caract_act2->symbole){//si même caractère dans les 2 alphabets
-			//dans les transitions, on remplace le caractère de l'automate 2 par celui de l'automate1
-			for(i=0;i<automate2->nombreEtats;i++){
-				trans_act = automate2->tab_transition[i];
+			//dans les transitions, on remplace le caractère du 2e automate par celui du 1er
+			if(inversion == 0){
+					nb_etat = automate2->nombreEtats;
+				}
+				else {
+					nb_etat = automate1->nombreEtats;
+				}
+			for(i=0;i<nb_etat;i++){
+				if(inversion == 0){
+					trans_act = automate2->tab_transition[i];
+				}
+				else {
+					trans_act = automate1->tab_transition[i];
+				}
 				while(trans_act != NULL){
 					if(trans_act->caractere == caract_act2){
 						trans_act->caractere = caract_act1->caractere_suivant;
@@ -123,6 +178,10 @@ void reunion_alphabet(Caractere* alphabet1,Automate_non_deterministe* automate2)
 			caract_act2->caractere_suivant = tmp1;
 			caract_act2 = tmp2;
 		}
+	}
+	
+	if(inversion == 1){
+		automate1->alphabet = automate2->alphabet;
 	}
 }
 
@@ -196,14 +255,8 @@ void reunion(Automate_non_deterministe* automate1, Automate_non_deterministe* au
 	Transition* trans_act = NULL;
 	Transition* trans_tmp = NULL;
 
-	if(automate1->alphabet == NULL){//si pas d'alphabet 1, on prend le 2
-		automate1->alphabet = automate2->alphabet;
-	}
-	else{//sinon on fait la réunion des 2
-		reunion_alphabet(automate1->alphabet,automate2);
-	}
 
-
+	reunion_alphabet(automate1,automate2);
 
 	//ajout des etats de l'automate 2 dans l'automate 1
 
@@ -318,12 +371,7 @@ void concatenation(Automate_non_deterministe* automate1, Automate_non_determinis
 	Transition* trans_tmp = NULL;
 	Transition* new_trans = NULL;
 
-	if(automate1->alphabet == NULL){//si pas d'alphabet 1, on prend le 2
-		automate1->alphabet = automate2->alphabet;
-	}
-	else{//sinon on fait la réunion des 2
-		reunion_alphabet(automate1->alphabet,automate2);
-	}
+	reunion_alphabet(automate1,automate2);
 
 	//réallocation du tableau de transition + remplissage avec les transitions de l'automate 2
 	automate1->tab_transition = (Transition**) realloc(automate1->tab_transition, (automate1->nombreEtats + automate2->nombreEtats - 1)* sizeof(Transition*));

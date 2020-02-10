@@ -261,7 +261,17 @@ void free_groupe_etat(Groupe_etat* groupe_etat){
 //Free un automate déterministe
 void free_auto_deterministe(Automate_deterministe* automate){
 	int i;
+	Groupe_etat* groupe_etat_act = NULL;
+	Groupe_etat* groupe_etat_tmp = NULL;
 
+	groupe_etat_act = automate->liste_groupe_etat;
+	while(groupe_etat_act != NULL && groupe_etat_act->groupe_etat_suivant != NULL){
+		groupe_etat_tmp = groupe_etat_act->groupe_etat_suivant;
+		groupe_etat_act->groupe_etat_suivant = groupe_etat_tmp->groupe_etat_suivant;
+		free_groupe_etat(groupe_etat_tmp);
+	}
+	free_groupe_etat(groupe_etat_act);
+	
 	for(i=0;i<automate->nb_groupe_etat;i++){
 		free(automate->tab_transition[i]);
 	}
