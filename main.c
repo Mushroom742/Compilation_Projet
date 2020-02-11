@@ -314,6 +314,19 @@ int main (){
 						i++;
 					}
 					
+					//on enlève l'automate non déterministe de la liste
+					if(choix_auto1 == 0){
+						liste_automate_nd = auto1_nd->automate_suivant;
+					}
+					else{
+						auto_nd_act = liste_automate_nd;
+						for(i=0;i<choix_auto1-1;i++){
+							auto_nd_act = auto_nd_act->automate_suivant;
+						}
+						auto_nd_act->automate_suivant = auto1_nd->automate_suivant;
+					}
+					nb_auto_nd--;
+					
 					//determinisation
 					auto_d = determinisation(auto1_nd);
 					printf("Automate créé : \n");

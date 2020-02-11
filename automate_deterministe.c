@@ -55,7 +55,9 @@ Automate_deterministe* determinisation(Automate_non_deterministe* automate_nd){
 	Groupe_etat* groupe_etat_match = NULL;
 	Groupe_etat* groupe_etat_tmp = NULL;
 	Etat* etat_act = NULL;
+	Etat* etat_tmp;
 	Transition* transition_act = NULL;
+	Transition* transition_tmp;
 	int i,j,nb_caractere;
 
 	automate_d->alphabet = automate_nd->alphabet;
@@ -151,6 +153,7 @@ Automate_deterministe* determinisation(Automate_non_deterministe* automate_nd){
 	//tri de la liste des groupes d'état pour mettre les accepteurs en 1er
 	groupe_etat_act = automate_d->liste_groupe_etat;
 	while(groupe_etat_act != NULL && groupe_etat_act->groupe_etat_suivant != NULL){
+		printf("act : %d,suivant : %d\n",groupe_etat_act->numero,groupe_etat_act->groupe_etat_suivant->numero);
 		if(groupe_etat_act->groupe_etat_suivant->accepteur == 1){
 			//on met le groupe suivant au début
 			groupe_etat_tmp = groupe_etat_act->groupe_etat_suivant;
@@ -158,9 +161,31 @@ Automate_deterministe* determinisation(Automate_non_deterministe* automate_nd){
 			groupe_etat_tmp->groupe_etat_suivant = automate_d->liste_groupe_etat;
 			automate_d->liste_groupe_etat = groupe_etat_tmp;
 		}
-		groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
+		else{
+			groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
+		}
 	}
+	
+	//free de l'automate non déterministe (sauf l'alphabet)
+	etat_act = automate_nd->liste_etat;
+	while(etat_act != NULL && etat_act->etat_suivant != NULL){
+		etat_tmp = etat_act->etat_suivant;
+		etat_act->etat_suivant = etat_tmp->etat_suivant;
+		free(etat_tmp);
+	}
+	free(etat_act);
 
+	for(i=0;i<automate_nd->nombreEtats;i++){
+		transition_act = automate_nd->tab_transition[i];
+		while(transition_act != NULL && transition_act->transitionSuivante != NULL){
+			transition_tmp = transition_act->transitionSuivante;
+			transition_act->transitionSuivante = transition_tmp->transitionSuivante;
+			free(transition_tmp);
+		}
+		free(transition_act);
+	}
+	free(automate_nd->tab_transition);
+	free(automate_nd);
 
 	return automate_d;
 }
@@ -459,6 +484,16 @@ void free_auto_deterministe(Automate_deterministe* automate){
 	int i;
 	Groupe_etat* groupe_etat_act = NULL;
 	Groupe_etat* groupe_etat_tmp = NULL;
+	Caractere* caractere_act = NULL;
+	Caractere* caractere_tmp = NULL;
+	
+	caractere_act = automate->alphabet;
+	while(caractere_act != NULL && caractere_act->caractere_suivant != NULL){
+		caractere_tmp = caractere_act->caractere_suivant;
+		caractere_act->caractere_suivant = caractere_tmp->caractere_suivant;
+		free(caractere_tmp);
+	}
+	free(caractere_act);
 
 	groupe_etat_act = automate->liste_groupe_etat;
 	while(groupe_etat_act != NULL && groupe_etat_act->groupe_etat_suivant != NULL){
@@ -485,7 +520,7 @@ void affichage_auto_deterministe(Automate_deterministe* automate){
 	printf("Alphabet :");
 	caractere_act = automate->alphabet;
 	while(caractere_act != NULL){
-		printf(" %c (%d),",caractere_act->symbole,caractere_act->numero);
+		printf(" %c,",caractere_act->symbole);
 		caractere_act = caractere_act->caractere_suivant;
 	}
 	printf("\nNb états : %d \n",automate->nb_groupe_etat);
@@ -499,16 +534,7 @@ void affichage_auto_deterministe(Automate_deterministe* automate){
 	printf("\nListe etats:");
 	groupe_etat_act = automate->liste_groupe_etat;
 	while(groupe_etat_act != NULL){
-		printf(" %d(",groupe_etat_act->numero);
-		for(i=0;i<groupe_etat_act->nb_etat;i++){
-			if(groupe_etat_act->tab_etat[i] != NULL){
-				printf(" %d,",groupe_etat_act->tab_etat[i]->num);
-			}
-			else{
-				printf(" NULL");
-			}
-		}
-		printf("),");
+		printf(" %d (%d),",groupe_etat_act->numero,groupe_etat_act->accepteur);
 		groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
 	}
 	printf("\nTableau de transitions :\n ");
