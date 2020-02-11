@@ -16,32 +16,17 @@ int main (){
 
 	auto1 = un_mot('a');
 
-	auto2 = un_mot('d');
+	auto2 = un_mot('b');
+
+	mise_etoile(auto2);
 
 	concatenation(auto1,auto2);
-
-	auto3 = un_mot('e');
-
-	reunion(auto1,auto3);
-
-	mise_etoile(auto1);
-
-	auto4 = un_mot('a');
-
-	auto5 = un_mot('b');
-
-
-	reunion(auto4,auto5);
-
-	printf("concatenation\n");
-	reunion(auto1,auto4);
-	
-	auto7 = un_mot('!');
-	reunion(auto1,auto7);
 	affichage_automate_non_deterministe(auto1);
 
 	auto6 = determinisation(auto1);
 	affichage_auto_deterministe(auto6);
+
+	//minimisation(auto6);
 
 	free_automate(auto1);
 	free_auto_deterministe(auto6);
