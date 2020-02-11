@@ -189,6 +189,8 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
         caractere_act = caractere_act->caractere_suivant;
     }
 
+    //Premiere ligne : init
+    //Derniere ligne : Bilan
     int** tab = malloc(nb_caractere+2*sizeof(int*));
     for(i=0;i<nb_caractere+2;i++){
         tab[i] = malloc(automate->nb_groupe_etat*sizeof(int));
@@ -199,6 +201,7 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
         automate_m->tab_transition[i] = malloc(nb_caractere*sizeof(Groupe_etat));
     }
 
+    //On transforme nos groupe d'etats en etats, et on stock la premiere initialisation
     i=0;
     while(groupe_etat_act!=NULL){
         etat_act = malloc(sizeof(Etat));
@@ -219,17 +222,21 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
 
     while (ok==0) {
 
+        //On remplis les transitions de notre tableau
         for(i=0;i<nb_caractere;i++){
             for(j=0;j<new_groupe->nb_etat;j++){
                 tab[i+1][j] = tab[0][new_groupe->tab_etat[automate->tab_transition[j][i]->numero]->num];
             }
         }
 
+        //Initialisation du bilan
         for(i=0;i<new_groupe->nb_etat;i++){
             tab[nb_caractere+1][i] = -1;
         }
 
+        //Bilan
         for(i=0;i<new_groupe->nb_etat;i++){
+            //On compare avec les colonnes precedentes
             if(i==0){
                 tab[nb_caractere+1][i]=nb_etat;
                 nb_etat++;
@@ -239,6 +246,7 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
                     tab[nb_caractere+1][i]=tab[nb_caractere+1][j];
                     for(k=1;k<nb_caractere;k++){
                         if(tab[k][i]!=tab[k][j]){
+                            //Si on remarque une colonne qui diffère avec la même initialisation
                             tab[nb_caractere+1][i]=nb_etat;
                             nb_etat++;
                             j=i;
@@ -254,30 +262,32 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
             }
 
         }
-        printf("Etape\n");
+
         ok=1;
+        //On compare initialisation et bilan
         for(i=0;i<new_groupe->nb_etat;i++){
             if(tab[0][i]!=tab[nb_caractere+1][i]){
                 ok=0;
             }
         }
 
-        for(i=0;i<nb_caractere+2;i++){
+        /*for(i=0;i<nb_caractere+2;i++){
             for(j=0;j<new_groupe->nb_etat;j++){
                 printf("%d ", tab[i][j]);
             }
             printf("\n");
-        }
+        }*/
 
+        //Si il faut une étape supplémentaire, on remplace la ligne d'initialisation par celle du bilan
         if(ok==0){
             for(i=0;i<new_groupe->nb_etat;i++){
                 tab[0][i] = tab[nb_caractere+1][i];
-                tab[nb_caractere+1][i] = -1;
             }
             nb_etat = 0;
         }
     }
-    printf("Création du nouvel automate\n");
+
+    //Création du nouvel automate
     automate_m->alphabet = automate->alphabet;
     automate_m->nb_groupe_etat = nb_etat;
     automate_m->automate_suivant = NULL;
@@ -287,6 +297,7 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
     automate_m->liste_groupe_etat = creation_groupe_etat(etat_act);
     groupe_etat_tmp = automate_m->liste_groupe_etat;
 
+    //Etats
     while(groupe_etat_act!=NULL){
         if(groupe_etat_act==automate->groupe_etat_initial){
             automate_m->groupe_etat_initial = creation_groupe_etat(etat_act);
@@ -309,6 +320,7 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
         }
     }
 
+    //Transitions
     for(i=0;i<automate->nb_groupe_etat;i++){
         for(j=0;j<nb_caractere;j++){
             groupe_etat_act = automate_m->liste_groupe_etat;
@@ -323,7 +335,13 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
         }
     }
 
-	groupe_etat_act = automate->liste_groupe_etat;
+
+    /*for(i=0;i<nb_caractere+2;i++){
+        free(tab[i]);
+    }
+    free(tab);
+
+    groupe_etat_act = automate->liste_groupe_etat;
 	while(groupe_etat_act != NULL && groupe_etat_act->groupe_etat_suivant != NULL){
 		groupe_etat_tmp = groupe_etat_act->groupe_etat_suivant;
 		groupe_etat_act->groupe_etat_suivant = groupe_etat_tmp->groupe_etat_suivant;
@@ -331,14 +349,15 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
 	}
 	free_groupe_etat(groupe_etat_act);
 
+    free_groupe_etat(automate->groupe_etat_initial);*/
+
 	for(i=0;i<automate->nb_groupe_etat;i++){
 		free(automate->tab_transition[i]);
 	}
 	free(automate->tab_transition);
 	free(automate);
 
-    free(new_groupe->tab_etat);
-    free(new_groupe);
+    free_groupe_etat(new_groupe);
 
     return automate_m;
 }
