@@ -156,7 +156,6 @@ Automate_deterministe* determinisation(Automate_non_deterministe* automate_nd){
 	//tri de la liste des groupes d'état pour mettre les accepteurs en 1er
 	groupe_etat_act = automate_d->liste_groupe_etat;
 	while(groupe_etat_act != NULL && groupe_etat_act->groupe_etat_suivant != NULL){
-		printf("act : %d,suivant : %d\n",groupe_etat_act->numero,groupe_etat_act->groupe_etat_suivant->numero);
 		if(groupe_etat_act->groupe_etat_suivant->accepteur == 1){
 			//on met le groupe suivant au début
 			groupe_etat_tmp = groupe_etat_act->groupe_etat_suivant;
@@ -537,7 +536,7 @@ void affichage_auto_deterministe(Automate_deterministe* automate){
 	printf("\nListe etats:");
 	groupe_etat_act = automate->liste_groupe_etat;
 	while(groupe_etat_act != NULL){
-		printf(" %d (%d),",groupe_etat_act->numero,groupe_etat_act->accepteur);
+		printf(" %d,",groupe_etat_act->numero);
 		groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
 	}
 	printf("\nTableau de transitions :\n ");
