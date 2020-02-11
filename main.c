@@ -10,7 +10,7 @@ int main (){
 	Automate_non_deterministe* auto3 = NULL;
 	Automate_non_deterministe* auto4 = NULL;
 	Automate_non_deterministe* auto5 = NULL;
-	Automate_non_deterministe* auto7 = NULL;
+	Automate_deterministe* auto7 = NULL;
 
 	Automate_deterministe* auto6 = NULL;
 
@@ -26,10 +26,11 @@ int main (){
 	auto6 = determinisation(auto1);
 	affichage_auto_deterministe(auto6);
 
-	//minimisation(auto6);
+	auto7 = minimisation(auto6);
+	affichage_auto_deterministe(auto7);
 
 	free_automate(auto1);
-	free_auto_deterministe(auto6);
+	free_auto_deterministe(auto7);
 
 	return 0;
 }

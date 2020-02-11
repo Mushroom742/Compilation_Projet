@@ -38,6 +38,8 @@ struct Automate_deterministe {
 
 Automate_deterministe* determinisation(Automate_non_deterministe* automate_nd);
 
+Automate_deterministe* minimisation(Automate_deterministe* automate);
+
 //Création d'un groupe d'état à partir d'un état
 Groupe_etat* creation_groupe_etat(Etat* etat);
 
