@@ -36,6 +36,8 @@ struct Automate_deterministe {
 	Automate_deterministe* automate_suivant;
 };
 
+void execution_mot(Automate_deterministe* automate, char* mot);
+
 Automate_deterministe* determinisation(Automate_non_deterministe* automate_nd);
 
 Automate_deterministe* minimisation(Automate_deterministe* automate);

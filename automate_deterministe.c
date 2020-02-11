@@ -13,8 +13,10 @@ void execution_mot(Automate_deterministe* automate, char* mot){
 
     //Groupe initial
     groupe_etat_act = automate->liste_groupe_etat;
-    while(groupe_etat_act->numero != automate->groupe_etat_initial->numero){
-        groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
+    if(groupe_etat_act->numero!=automate->groupe_etat_initial->numero){
+        do{
+            groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
+        }while(groupe_etat_act->numero!=automate->groupe_etat_initial->numero);
     }
 
     //Pour toutes les lettres du mot
@@ -22,6 +24,7 @@ void execution_mot(Automate_deterministe* automate, char* mot){
 
         //On cherche le caractère dans l'alphabet
         caractere_tmp = automate->alphabet;
+        caractere_trouve=0;
         while(caractere_tmp!=NULL&&caractere_trouve == 0){
             if(caractere_tmp->symbole == mot[i]){
                 caractere_trouve = 1;
@@ -35,7 +38,7 @@ void execution_mot(Automate_deterministe* automate, char* mot){
             //On retrouve la transitions et on actualise le groupe actuel
             groupe_etat_act = automate->tab_transition[groupe_etat_act->numero][caractere_tmp->numero];
         }
-
+        i++;
     }
 
     //On vérifie qu'on termine sur un groupe accepteur
