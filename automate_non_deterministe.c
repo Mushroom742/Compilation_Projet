@@ -476,6 +476,7 @@ void concatenation(Automate_non_deterministe* automate1, Automate_non_determinis
 	for(i=0;i<automate2->nombreEtats;i++){
 	//On ajoute les transitions restantes à la suite de celles de l'automate1
 		if(i != automate2->etat_initial->num){
+			trans_act = automate2->tab_transition[i];
 			while(trans_act != NULL){
 				trans_tmp = trans_act->transitionSuivante;
 				ajout_transition(trans_act,automate1->tab_transition);
