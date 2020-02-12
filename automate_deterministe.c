@@ -376,9 +376,17 @@ void minimisation(Automate_deterministe* automate){
     }
     free(automate->tab_transition);
     free(automate);
+    
+    for(i=0;i<nb_caractere+2;i++){
+		free(tab[i]);
+	}
+	free(tab);
 
     *automate = *automate_m;
-
+	
+	for(i=0;i<new_groupe->nb_etat;i++){
+		free(new_groupe->tab_etat[i]);
+	}
     free_groupe_etat(new_groupe);
 }
 
