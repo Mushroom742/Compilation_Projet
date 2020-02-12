@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <assert.h>
 
 void execution_mot(Automate_deterministe* automate, char* mot){
     int i=0;
@@ -134,6 +135,7 @@ Automate_deterministe* determinisation(Automate_non_deterministe* automate_nd){
 
 				//réallocation du tableau de transitions
 				automate_d->tab_transition = realloc(automate_d->tab_transition,(automate_d->nb_groupe_etat + 1) * sizeof(Groupe_etat**));
+				assert(automate_d->tab_transition != NULL); //vérif de la réallocation
 				automate_d->tab_transition[automate_d->nb_groupe_etat] = malloc(nb_caractere * sizeof(Groupe_etat*));
 				for(j=0;j<nb_caractere;j++){
 					automate_d->tab_transition[automate_d->nb_groupe_etat][j] = NULL;
@@ -428,6 +430,7 @@ void ajout_etat(Etat* etat, Groupe_etat* groupe_etat){
 		else if(groupe_etat->tab_etat[i]->num > etat->num){//si le numéro de l'état est plus grand que l'état à ajouter
 			//on ajoute une case au tableau d'état et on mémorise le rang d'ajout
 			groupe_etat->tab_etat = (Etat**) realloc(groupe_etat->tab_etat,(groupe_etat->nb_etat + 1) * sizeof(Etat*));
+			assert(groupe_etat->tab_etat != NULL); //test de la réallocation
 			ok = 1;
 		}
 		else{

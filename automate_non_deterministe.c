@@ -3,8 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-//TO DO : Gérer doublons dans alphabet + free des doublons
+#include <assert.h>
 
 //Renvoie un automate non déterministe reconnaissant le langage vide
 Automate_non_deterministe* langage_vide(){
@@ -316,6 +315,7 @@ void reunion(Automate_non_deterministe* automate1, Automate_non_deterministe* au
 
 	//réallocation du tableau de transition + remplissage avec les transitions de l'automate 2
 	automate1->tab_transition = (Transition**) realloc(automate1->tab_transition, automate1->nombreEtats * sizeof(Transition*));
+	assert(automate1->tab_transition != NULL); //vérif de la réallocation
 
 	for(i=nb_etat;i<automate1->nombreEtats;i++){
 		automate1->tab_transition[i] = NULL;
@@ -375,6 +375,7 @@ void concatenation(Automate_non_deterministe* automate1, Automate_non_determinis
 
 	//réallocation du tableau de transition + remplissage avec les transitions de l'automate 2
 	automate1->tab_transition = (Transition**) realloc(automate1->tab_transition, (automate1->nombreEtats + automate2->nombreEtats - 1)* sizeof(Transition*));
+	assert(automate1->tab_transition != NULL); //vérification de la réalloc
 
 	for(i=automate1->nombreEtats;i<(automate1->nombreEtats + automate2->nombreEtats - 1);i++){
 		automate1->tab_transition[i] = NULL;
@@ -503,17 +504,19 @@ void mise_etoile(Automate_non_deterministe* automate){
 
 	etat_act = automate->liste_etat;
 	while(etat_act != NULL && etat_act->accepteur == 1){ //pour chaque état accepteur
-		transition_act = automate->tab_transition[automate->etat_initial->num];
-		while(transition_act != NULL){//on ajoute les transitions de l'état initial
-			nouvelle_transition = malloc(sizeof(Transition));
-			nouvelle_transition->depart = etat_act;
-			nouvelle_transition->arrivee = transition_act->arrivee;
-			nouvelle_transition->caractere = transition_act->caractere;
-			nouvelle_transition->transitionSuivante = NULL;
+		if(etat_act != automate->etat_initial){//sauf l'état initial (il a déjà les transitions)
+			transition_act = automate->tab_transition[automate->etat_initial->num];
+			while(transition_act != NULL){//on ajoute les transitions de l'état initial
+				nouvelle_transition = malloc(sizeof(Transition));
+				nouvelle_transition->depart = etat_act;
+				nouvelle_transition->arrivee = transition_act->arrivee;
+				nouvelle_transition->caractere = transition_act->caractere;
+				nouvelle_transition->transitionSuivante = NULL;
 
-			ajout_transition(nouvelle_transition,automate->tab_transition);
+				ajout_transition(nouvelle_transition,automate->tab_transition);
 
-			transition_act = transition_act->transitionSuivante;
+				transition_act = transition_act->transitionSuivante;
+			}
 		}
 
 		etat_act = etat_act->etat_suivant;
