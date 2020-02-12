@@ -337,8 +337,6 @@ int main (){
 					liste_automate_d = auto_d;
 					nb_auto_d++;
 					
-					//PENSER A FREE L'AUTOMATE NON DETERMINISTE ?
-					
 					//Remise à NULL
 					auto_d = NULL;
 					auto1_nd = NULL;
@@ -374,7 +372,11 @@ int main (){
 					}
 					
 					//minimisation
+					printf("avant %p\n",auto_d);
 					minimisation(auto_d);
+					printf("après %p\n",auto_d);
+					printf("Automate créé : \n");
+					affichage_auto_deterministe(auto_d);
 					
 					
 					//Remise à NULL
