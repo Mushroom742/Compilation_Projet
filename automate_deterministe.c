@@ -216,10 +216,13 @@ void minimisation(Automate_deterministe* automate){
         nb_caractere++;
         caractere_act = caractere_act->caractere_suivant;
     }
-
+	
     //Premiere ligne : init
     //Derniere ligne : Bilan
-    int tab[nb_caractere+2][automate->nb_groupe_etat];
+    int** tab = malloc((nb_caractere+2)*sizeof(int*));
+    for(i=0;i<nb_caractere+2;i++){
+		tab[i] = malloc(automate->nb_groupe_etat*sizeof(int));
+    }
 
     automate_m->tab_transition = malloc(automate->nb_groupe_etat*sizeof(Groupe_etat**));
     for(i=0;i<automate->nb_groupe_etat;i++){
@@ -358,7 +361,8 @@ void minimisation(Automate_deterministe* automate){
             }
         }
     }
-
+	
+	
     groupe_etat_act = automate->liste_groupe_etat;
     while(groupe_etat_act != NULL && groupe_etat_act->groupe_etat_suivant != NULL){
         groupe_etat_tmp = groupe_etat_act->groupe_etat_suivant;
@@ -419,20 +423,21 @@ void ajout_etat(Etat* etat, Groupe_etat* groupe_etat){
 			i++;
 		}
 	}
+	if(i == groupe_etat->nb_etat){
+		groupe_etat->tab_etat = (Etat**) realloc(groupe_etat->tab_etat,(groupe_etat->nb_etat + 1) * sizeof(Etat*));
+		assert(groupe_etat->tab_etat != NULL); //test de la réallocation
+	}
 
 	//on rend le groupe accepteur s'il contient un état accepteur
 	if(groupe_etat->accepteur == 0 && etat->accepteur == 1){
 		groupe_etat->accepteur = 1;
 	}
-
 	for(i=i;i<groupe_etat->nb_etat+1;i++){//on ajoute l'état dans le tableau et on décale la fin du tableau
 		etat_tmp = groupe_etat->tab_etat[i];
 		groupe_etat->tab_etat[i] = etat;
 		etat = etat_tmp;
 	}
-
 	groupe_etat->nb_etat++;
-
 	return;
 }
 
