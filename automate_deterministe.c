@@ -216,7 +216,7 @@ void minimisation(Automate_deterministe* automate){
         nb_caractere++;
         caractere_act = caractere_act->caractere_suivant;
     }
-	
+
     //Premiere ligne : init
     //Derniere ligne : Bilan
     int** tab = malloc((nb_caractere+2)*sizeof(int*));
@@ -326,10 +326,6 @@ void minimisation(Automate_deterministe* automate){
 
     //Etats
     while(groupe_etat_act!=NULL){
-        if(groupe_etat_act==automate->groupe_etat_initial){
-            automate_m->groupe_etat_initial = creation_groupe_etat(etat_act);
-            automate_m->groupe_etat_initial->numero = tab[0][groupe_etat_act->numero];
-        }
         if(groupe_etat_act->accepteur==1){
             groupe_etat_tmp->accepteur = 1;
         }
@@ -343,6 +339,7 @@ void minimisation(Automate_deterministe* automate){
         groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
         if(groupe_etat_act!=NULL){
             groupe_etat_tmp->groupe_etat_suivant = creation_groupe_etat(etat_act);
+            automate_m->groupe_etat_initial = groupe_etat_tmp->groupe_etat_suivant;
             groupe_etat_tmp = groupe_etat_tmp->groupe_etat_suivant;
         }
     }
@@ -361,8 +358,8 @@ void minimisation(Automate_deterministe* automate){
             }
         }
     }
-	
-	
+
+
     groupe_etat_act = automate->liste_groupe_etat;
     while(groupe_etat_act != NULL && groupe_etat_act->groupe_etat_suivant != NULL){
         groupe_etat_tmp = groupe_etat_act->groupe_etat_suivant;
@@ -376,14 +373,14 @@ void minimisation(Automate_deterministe* automate){
     }
     free(automate->tab_transition);
     free(automate);
-    
+
     for(i=0;i<nb_caractere+2;i++){
 		free(tab[i]);
 	}
 	free(tab);
 
     *automate = *automate_m;
-	
+
 	for(i=0;i<new_groupe->nb_etat;i++){
 		free(new_groupe->tab_etat[i]);
 	}
