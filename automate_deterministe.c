@@ -195,7 +195,7 @@ Automate_deterministe* determinisation(Automate_non_deterministe* automate_nd){
 }
 
 //minimise un automate déterministe
-void minimisation(Automate_deterministe* automate){
+Automate_deterministe* minimisation(Automate_deterministe* automate){
     Automate_deterministe* automate_m = malloc(sizeof(Automate_deterministe));
 
     int i,j,k;
@@ -209,7 +209,6 @@ void minimisation(Automate_deterministe* automate){
 
     Groupe_etat* groupe_etat_act = automate->liste_groupe_etat;
     Groupe_etat* groupe_etat_tmp = NULL;
-    Groupe_etat* tmp = NULL;
     Caractere* caractere_act = NULL;
     caractere_act = automate->alphabet;
     while(caractere_act!=NULL){
@@ -318,32 +317,44 @@ void minimisation(Automate_deterministe* automate){
     automate_m->alphabet = automate->alphabet;
     automate_m->nb_groupe_etat = nb_etat;
     automate_m->automate_suivant = automate->automate_suivant;
+    automate_m->liste_groupe_etat = NULL;
     etat_act = NULL;
 
     groupe_etat_act = automate->liste_groupe_etat;
+
     automate_m->liste_groupe_etat = creation_groupe_etat(etat_act);
     groupe_etat_tmp = automate_m->liste_groupe_etat;
 
+    if(groupe_etat_act==automate->groupe_etat_initial){
+        automate_m->groupe_etat_initial = groupe_etat_tmp;
+    }
+
+    if(groupe_etat_act->accepteur==1){
+        groupe_etat_tmp->accepteur = 1;
+    }
+
+    groupe_etat_tmp->numero = tab[0][groupe_etat_act->numero];
+
+    groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
+
     //Etats
-    while(groupe_etat_act!=NULL){
+    while(groupe_etat_act != NULL){
+
+        groupe_etat_tmp = creation_groupe_etat(etat_act);
+		groupe_etat_tmp->groupe_etat_suivant = automate_m->liste_groupe_etat;
+		automate_m->liste_groupe_etat = groupe_etat_tmp;
+		
+        if(groupe_etat_act==automate->groupe_etat_initial){
+            automate_m->groupe_etat_initial = groupe_etat_tmp;
+        }
+
         if(groupe_etat_act->accepteur==1){
             groupe_etat_tmp->accepteur = 1;
         }
-        groupe_etat_tmp->numero = tab[0][groupe_etat_act->numero];
-        tmp = automate_m->liste_groupe_etat;
-        while(tmp!=NULL){
-            tmp=tmp->groupe_etat_suivant;
-        }
 
         groupe_etat_tmp->numero = tab[0][groupe_etat_act->numero];
+
         groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
-        if(groupe_etat_act!=NULL){
-            groupe_etat_tmp->groupe_etat_suivant = creation_groupe_etat(etat_act);
-            if(groupe_etat_act==automate->groupe_etat_initial){
-                automate_m->groupe_etat_initial = groupe_etat_tmp->groupe_etat_suivant;
-            }
-            groupe_etat_tmp = groupe_etat_tmp->groupe_etat_suivant;
-        }
     }
 
     //Transitions
@@ -360,6 +371,21 @@ void minimisation(Automate_deterministe* automate){
             }
         }
     }
+    
+    //tri de la liste des groupes d'état pour mettre les accepteurs en 1er
+	groupe_etat_act = automate_m->liste_groupe_etat;
+	while(groupe_etat_act != NULL && groupe_etat_act->groupe_etat_suivant != NULL){
+		if(groupe_etat_act->groupe_etat_suivant->accepteur == 1){
+			//on met le groupe suivant au début
+			groupe_etat_tmp = groupe_etat_act->groupe_etat_suivant;
+			groupe_etat_act->groupe_etat_suivant = groupe_etat_tmp->groupe_etat_suivant;
+			groupe_etat_tmp->groupe_etat_suivant = automate_m->liste_groupe_etat;
+			automate_m->liste_groupe_etat = groupe_etat_tmp;
+		}
+		else{
+			groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
+		}
+	}
 
 
     groupe_etat_act = automate->liste_groupe_etat;
@@ -381,12 +407,14 @@ void minimisation(Automate_deterministe* automate){
 	}
 	free(tab);
 
-    *automate = *automate_m;
+    //*automate = *automate_m;
 
 	for(i=0;i<new_groupe->nb_etat;i++){
 		free(new_groupe->tab_etat[i]);
 	}
     free_groupe_etat(new_groupe);
+    
+    return automate_m;
 }
 
 //Création d'un groupe d'état à partir d'un état

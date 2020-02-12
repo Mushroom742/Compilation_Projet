@@ -11,6 +11,7 @@ int main (){
 	Automate_deterministe* liste_automate_d = NULL;
 	Automate_deterministe* auto_d_act = NULL;
 	Automate_deterministe* auto_d = NULL;
+	Automate_deterministe* auto1_d = NULL;
 	int choix,choix_auto1,choix_auto2,i;
 	int nb_auto_nd = 0;
 	int nb_auto_d = 0;
@@ -372,9 +373,20 @@ int main (){
 					}
 					
 					//minimisation
-					minimisation(auto_d);
+					auto1_d = minimisation(auto_d);
 					printf("Automate créé : \n");
-					affichage_auto_deterministe(auto_d);
+					affichage_auto_deterministe(auto1_d);
+					
+					if(choix_auto1 == 0){
+						liste_automate_d = auto1_d;
+					}
+					else{
+						auto_d_act = liste_automate_d;
+						for(i=0;i<choix_auto1-1;i++){
+							auto_d_act = auto_d_act->automate_suivant;
+						}
+						auto_d_act->automate_suivant = auto1_d;
+					}
 					
 					
 					//Remise à NULL
