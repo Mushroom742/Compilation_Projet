@@ -372,9 +372,7 @@ int main (){
 					}
 					
 					//minimisation
-					printf("avant %p\n",auto_d);
 					minimisation(auto_d);
-					printf("après %p\n",auto_d);
 					printf("Automate créé : \n");
 					affichage_auto_deterministe(auto_d);
 					
