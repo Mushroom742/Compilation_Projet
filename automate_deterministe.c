@@ -339,7 +339,9 @@ void minimisation(Automate_deterministe* automate){
         groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
         if(groupe_etat_act!=NULL){
             groupe_etat_tmp->groupe_etat_suivant = creation_groupe_etat(etat_act);
-            automate_m->groupe_etat_initial = groupe_etat_tmp->groupe_etat_suivant;
+            if(groupe_etat_act==automate->groupe_etat_initial){
+                automate_m->groupe_etat_initial = groupe_etat_tmp->groupe_etat_suivant;
+            }
             groupe_etat_tmp = groupe_etat_tmp->groupe_etat_suivant;
         }
     }
