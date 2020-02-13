@@ -370,6 +370,11 @@ void concatenation(Automate_non_deterministe* automate1, Automate_non_determinis
 	Transition* trans_act = NULL;
 	Transition* trans_tmp = NULL;
 	Transition* new_trans = NULL;
+	
+	if(automate1->liste_etat->accepteur == 0){//pas d'état accepteur dans le 1er automate
+		free_automate(automate2);
+		return;
+	}
 
 	reunion_alphabet(automate1,automate2);
 
