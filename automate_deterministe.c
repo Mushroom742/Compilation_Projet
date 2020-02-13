@@ -197,10 +197,11 @@ Automate_deterministe* determinisation(Automate_non_deterministe* automate_nd){
 Automate_deterministe* minimisation(Automate_deterministe* automate){
     Automate_deterministe* automate_m = malloc(sizeof(Automate_deterministe));
 
-    int i,j,k,doublon;
+    int i,j,k;
     int nb_caractere = 0;
     int nb_etat=0;
     int ok = 0, ok2;
+ 
 
     Etat* etat_act = NULL;
 
@@ -223,6 +224,7 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
     }
 
     int* tab_suppr = malloc(automate->nb_groupe_etat*sizeof(int));
+    int* doublon = malloc(automate->nb_groupe_etat*sizeof(int));
 
     for(i=0;i<automate->nb_groupe_etat;i++){
         tab_suppr[i] = -1;
@@ -257,9 +259,6 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
         i++;
     }
 
-	//TEST
-	
-
     while (ok==0) {
 
         //On remplis les transitions de notre tableau
@@ -285,57 +284,31 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
 
         //Bilan
         for(i=0;i<new_groupe->nb_etat;i++){
-
-            //Colonne 0
-            if(i==0){
-                tab[nb_caractere+1][i]=nb_etat;
-                printf("A nb_etat %d\n",nb_etat);
-                nb_etat++;
-            }
-			//On compare avec les colonnes precedentes
-			ok=1;
-            for(j=0;j<i;j++){
-				//Si on trouve une colonne avec un état initial similaire
-                if(tab[0][j]==tab[0][i]){
+			
+			if(tab[nb_caractere+1][i]==-1){
+				
+				tab[nb_caractere+1][i]=nb_etat;
+				nb_etat++;
+				
+				for(j=i+1;j<new_groupe->nb_etat;j++){
+					
 					ok=0;
-					doublon = j;
-					break;
+					for(k=0;k<nb_caractere+1;k++){
+						
+						if(tab[k][i]!=tab[k][j]){
+							
+							ok=1;
+							
+						}
+						
+					}
+					if(ok==0){
+						
+						tab[nb_caractere+1][j]=tab[nb_caractere+1][i];
+						
+					}
 				}
 			}
-			for(j=0;j<i;j++){
-				if(ok==0){
-					//On affecte le même bilan
-                    tab[nb_caractere+1][i]=tab[nb_caractere+1][doublon];
-                    //On parcourt tout les caractères
-                    ok2=1;
-                    for(k=1;k<nb_caractere+1;k++){
-						//Si un seul diffère
-                        if(tab[k][i]!=tab[k][doublon]){
-							printf("%d %d %d\n",k,i,doublon);
-							ok2=0;
-						}
-					}
-					for(k=1;k<nb_caractere+1;k++){
-						if(ok2==0){
-                            //On modifie son bilan
-                            tab[nb_caractere+1][i]=nb_etat;
-                            printf("B nb_etat %d\n",nb_etat);
-                            nb_etat++;
-                            j=i;
-                            break;
-                        }
-                        printf("Check %d\n",nb_etat);
-                    }
-                }
-                //On affecte son bilan
-                else{
-                    tab[nb_caractere+1][i]=nb_etat;
-                    printf("C nb_etat %d\n",nb_etat);
-                    nb_etat++;
-                    break;
-                }
-            }
-
         }
 
         //TEST
@@ -510,6 +483,7 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
 	}
 	free(tab);
     free(tab_suppr);
+    free(doublon);
     //*automate = *automate_m;
 
 	for(i=0;i<new_groupe->nb_etat;i++){
