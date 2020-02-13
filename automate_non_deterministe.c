@@ -391,7 +391,7 @@ void concatenation(Automate_non_deterministe* automate1, Automate_non_determinis
 
 				//On cherche les etats accepteurs de l'automate1
 				etat_tmp = automate1->liste_etat;
-				while(etat_tmp->accepteur==1&&etat_tmp!=NULL){
+				while(etat_tmp!=NULL && etat_tmp->accepteur==1){
 
 					//On cree notre nouvelle transition puis on l'ajoute
 					new_trans = malloc(sizeof(Transition));
@@ -417,6 +417,7 @@ void concatenation(Automate_non_deterministe* automate1, Automate_non_determinis
 
 				//On passe à la transition suivante et on libère celle que l'on vient de traiter
 				trans_tmp = automate2->tab_transition[i];
+				printf("test\n");
 				free(trans_act);
 				trans_act = trans_tmp;
 			}
