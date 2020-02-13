@@ -8,20 +8,15 @@
 
 void execution_mot(Automate_deterministe* automate, char* mot){
     int i=0;
-    bool error = 0, caractere_trouve = 0;
+    bool caractere_trouve = 0;
     Groupe_etat* groupe_etat_act = NULL;
     Caractere* caractere_tmp = NULL;
 
     //Groupe initial
-    groupe_etat_act = automate->liste_groupe_etat;
-    if(groupe_etat_act->numero!=automate->groupe_etat_initial->numero){
-        do{
-            groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
-        }while(groupe_etat_act->numero!=automate->groupe_etat_initial->numero);
-    }
+    groupe_etat_act = automate->groupe_etat_initial;
 
     //Pour toutes les lettres du mot
-    while(mot[i]!='\0'&&error == 0){
+    while(mot[i]!='\0' && mot[i] != '\n'){
 
         //On cherche le caractère dans l'alphabet
         caractere_tmp = automate->alphabet;
@@ -39,6 +34,10 @@ void execution_mot(Automate_deterministe* automate, char* mot){
             //On retrouve la transitions et on actualise le groupe actuel
             groupe_etat_act = automate->tab_transition[groupe_etat_act->numero][caractere_tmp->numero];
         }
+        else{
+			printf("Le caractère %c n'est pas dans l'alphabet, impossible de reconnaître le mot\n",mot[i]);
+			return;
+		}
         i++;
     }
 
