@@ -223,6 +223,12 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
 		tab[i] = malloc(automate->nb_groupe_etat*sizeof(int));
     }
 
+    int* tab_suppr = malloc(automate->nb_groupe_etat*sizeof(int));
+
+    for(i=0;i<automate->nb_groupe_etat;i++){
+        tab_suppr[i] = -1;
+    }
+
     automate_m->tab_transition = malloc(automate->nb_groupe_etat*sizeof(Groupe_etat**));
     for(i=0;i<automate->nb_groupe_etat;i++){
         automate_m->tab_transition[i] = malloc(nb_caractere*sizeof(Groupe_etat*));
@@ -296,6 +302,14 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
 
         }
 
+        //TEST
+        /*for(i=0;i<nb_caractere+2;i++){
+            for(j=0;j<new_groupe->nb_etat;j++){
+                printf("%d", tab[i][j]);
+            }
+            printf("\n");
+        }*/
+
         ok=1;
         //On compare initialisation et bilan
         for(i=0;i<new_groupe->nb_etat;i++){
@@ -321,9 +335,13 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
     etat_act = NULL;
 
     groupe_etat_act = automate->liste_groupe_etat;
+    printf("groupe act %d\n", groupe_etat_act->numero);
+    printf("on ajoute %d\n", tab[0][groupe_etat_act->numero]);
 
     automate_m->liste_groupe_etat = creation_groupe_etat(etat_act);
     groupe_etat_tmp = automate_m->liste_groupe_etat;
+
+    printf("On a ajouté\n");
 
     if(groupe_etat_act==automate->groupe_etat_initial){
         automate_m->groupe_etat_initial = groupe_etat_tmp;
@@ -339,39 +357,80 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
 
     //Etats
     while(groupe_etat_act != NULL){
-
-        groupe_etat_tmp = creation_groupe_etat(etat_act);
-		groupe_etat_tmp->groupe_etat_suivant = automate_m->liste_groupe_etat;
-		automate_m->liste_groupe_etat = groupe_etat_tmp;
-		
-        if(groupe_etat_act==automate->groupe_etat_initial){
-            automate_m->groupe_etat_initial = groupe_etat_tmp;
+        printf("groupe act %d\n", groupe_etat_act->numero);
+        ok=1;
+        groupe_etat_tmp = automate_m->liste_groupe_etat;
+        while (groupe_etat_tmp!=NULL) {
+            if(tab[0][groupe_etat_act->numero]==groupe_etat_tmp->numero){
+                ok=0;
+                printf("on rejette %d\n", tab[0][groupe_etat_act->numero]);
+                groupe_etat_act=groupe_etat_act->groupe_etat_suivant;
+                break;
+            }
+            groupe_etat_tmp=groupe_etat_tmp->groupe_etat_suivant;
         }
+        printf("on passe la\n");
+        if(ok==1){
+            printf("on ajoute %d\n", tab[0][groupe_etat_act->numero]);
+            groupe_etat_tmp = creation_groupe_etat(etat_act);
+    		groupe_etat_tmp->groupe_etat_suivant = automate_m->liste_groupe_etat;
+    		automate_m->liste_groupe_etat = groupe_etat_tmp;
 
-        if(groupe_etat_act->accepteur==1){
-            groupe_etat_tmp->accepteur = 1;
+            if(groupe_etat_act==automate->groupe_etat_initial){
+                automate_m->groupe_etat_initial = groupe_etat_tmp;
+            }
+
+            if(groupe_etat_act->accepteur==1){
+                groupe_etat_tmp->accepteur = 1;
+            }
+
+            groupe_etat_tmp->numero = tab[0][groupe_etat_act->numero];
+
+            groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
+            printf("On a ajouté\n");
         }
-
-        groupe_etat_tmp->numero = tab[0][groupe_etat_act->numero];
-
-        groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
     }
 
     //Transitions
+    printf("automate->nb_groupe_etat %d\n", automate->nb_groupe_etat);
+    printf("automate_m->nb_groupe_etat %d\n", automate_m->nb_groupe_etat);
+    k=0;
     for(i=0;i<automate->nb_groupe_etat;i++){
-        for(j=0;j<nb_caractere;j++){
-            groupe_etat_act = automate_m->liste_groupe_etat;
-            ok=0;
-            while(ok==0){
-                if(tab[j+1][i]==groupe_etat_act->numero){
-                    automate_m->tab_transition[i][j] = groupe_etat_act;
-                    ok=1;
-                }
-                groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
+        ok=0;
+
+        for(j=0;j<automate->nb_groupe_etat;j++){
+            if(tab_suppr[j]==tab[0][i]){
+                ok=1;
+                k--;
+                break;
+            }
+            else if(tab_suppr[j]==-1){
+                tab_suppr[j] = tab[0][i];
+                break;
             }
         }
+
+        if(ok==0){
+            printf("on rajoute notre trans\n");
+            for(j=0;j<nb_caractere;j++){
+                groupe_etat_act = automate_m->liste_groupe_etat;
+                ok=0;
+                while(ok==0){
+                    if(tab[j+1][i]==groupe_etat_act->numero){
+                        automate_m->tab_transition[k][j] = groupe_etat_act;
+                        ok=1;
+                    }
+                    groupe_etat_act = groupe_etat_act->groupe_etat_suivant;
+                }
+            }
+        }
+        k++;
     }
-    
+
+    for(j=k;j<i;j++){
+        free(automate_m->tab_transition[j]);
+    }
+
     //tri de la liste des groupes d'état pour mettre les accepteurs en 1er
 	groupe_etat_act = automate_m->liste_groupe_etat;
 	while(groupe_etat_act != NULL && groupe_etat_act->groupe_etat_suivant != NULL){
@@ -406,14 +465,14 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
 		free(tab[i]);
 	}
 	free(tab);
-
+    free(tab_suppr);
     //*automate = *automate_m;
 
 	for(i=0;i<new_groupe->nb_etat;i++){
 		free(new_groupe->tab_etat[i]);
 	}
     free_groupe_etat(new_groupe);
-    
+
     return automate_m;
 }
 
