@@ -200,7 +200,7 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
     int i,j,k;
     int nb_caractere = 0;
     int nb_etat=0;
-    int ok = 0, ok2;
+    int ok, ok2;
  
 
     Etat* etat_act = NULL;
@@ -259,6 +259,7 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
         i++;
     }
 
+	ok=0;
     while (ok==0) {
 
         //On remplis les transitions de notre tableau

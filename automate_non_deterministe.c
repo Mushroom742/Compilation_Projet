@@ -389,14 +389,14 @@ void concatenation(Automate_non_deterministe* automate1, Automate_non_determinis
 	//PRINT
 	trans_act = automate2->tab_transition[automate2->etat_initial->num];
 	while(trans_act != NULL){
-		printf("ON A %c\n", trans_act->caractere->symbole);
+		
 		trans_act = trans_act->transitionSuivante;
 	}
 	//
 	
 	trans_act = automate2->tab_transition[automate2->etat_initial->num];
 	while(trans_act != NULL){
-		printf("SYMBOLE BEGIN %c\n", trans_act->caractere->symbole);
+		
 		etat_tmp = automate1->liste_etat;
 		while(etat_tmp!=NULL && etat_tmp->accepteur==1){
 
@@ -408,36 +408,22 @@ void concatenation(Automate_non_deterministe* automate1, Automate_non_determinis
 			ajout_transition(new_trans,automate1->tab_transition);
 			
 			//On passe à l'état suivant
-			if(etat_tmp->etat_suivant!=NULL){
-				etat_tmp = etat_tmp->etat_suivant;
-			}
-			else{
-				break;
-			}
+			etat_tmp = etat_tmp->etat_suivant;
 		}
 		
 		trans_act = trans_act->transitionSuivante;
 	}
 	
+	etat_tmp = automate1->liste_etat;
+	while(etat_tmp!=NULL && etat_tmp->accepteur==1){
+		if(automate2->etat_initial->accepteur == 0){
+			etat_tmp->accepteur = 0;
+		}
+		etat_tmp = etat_tmp->etat_suivant;
+	}
+	
 	trans_act = automate2->tab_transition[automate2->etat_initial->num];
 	while(trans_act != NULL){
-		
-		etat_tmp = automate1->liste_etat;
-		while(etat_tmp!=NULL && etat_tmp->accepteur==1){
-			
-			//Si l'etat initial de l'automate2 n'est pas final, les etats finaux de l'automate1 ne le sont plus
-			if(automate2->etat_initial->accepteur == 0){
-				etat_tmp->accepteur = 0;
-			}
-			
-			//On passe à l'état suivant
-			if(etat_tmp->etat_suivant!=NULL){
-				etat_tmp = etat_tmp->etat_suivant;
-			}
-			else{
-				break;
-			}
-		}
 		
 		trans_tmp = trans_act->transitionSuivante;
 		free(trans_act);
