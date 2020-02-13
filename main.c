@@ -5,8 +5,6 @@
 
 #define TAILLE_MAX_BUFFER 100
 
-void purge_buffer();
-
 int main (){
 	Automate_non_deterministe* liste_automate_nd = NULL;
 	Automate_non_deterministe* auto_nd_act = NULL;
@@ -30,7 +28,6 @@ int main (){
 		printf("(4) Réunion\n(5) Concaténation\n(6) Mise à l'étoile\n");
 		printf("(7) Exécution d'un mot\n(8) Déterminisation\n(9) Minimisation\n");
 		
-		//purge_buffer();
 		fgets(buffer,TAILLE_MAX_BUFFER,stdin);
 		choix = atoi(buffer);
 		
@@ -67,7 +64,6 @@ int main (){
 				break;
 			case 3: //Un mot
 				printf("Entrez un caractère \n");
-				//purge_buffer();
 				fgets(buffer,TAILLE_MAX_BUFFER,stdin);
 				lettre = buffer[0];
 				
@@ -102,7 +98,6 @@ int main (){
 							affichage_automate_non_deterministe(auto_nd_act);
 							auto_nd_act = auto_nd_act->automate_suivant;
 						}
-						//purge_buffer();
 						fgets(buffer,TAILLE_MAX_BUFFER,stdin);
 						choix_auto1 = atoi(buffer);
 					} while(choix_auto1 < 0 || choix_auto1 >= nb_auto_nd);
@@ -117,7 +112,6 @@ int main (){
 							}
 							auto_nd_act = auto_nd_act->automate_suivant;
 						}
-						//purge_buffer();
 						fgets(buffer,TAILLE_MAX_BUFFER,stdin);
 						choix_auto2 = atoi(buffer);
 					} while(choix_auto2 < 0 || choix_auto2 >= nb_auto_nd || choix_auto2 == choix_auto1);
@@ -175,7 +169,6 @@ int main (){
 							affichage_automate_non_deterministe(auto_nd_act);
 							auto_nd_act = auto_nd_act->automate_suivant;
 						}
-						//purge_buffer();
 						fgets(buffer,TAILLE_MAX_BUFFER,stdin);
 						choix_auto1 = atoi(buffer);
 					} while(choix_auto1 < 0 || choix_auto1 >= nb_auto_nd);
@@ -190,7 +183,6 @@ int main (){
 							}
 							auto_nd_act = auto_nd_act->automate_suivant;
 						}
-						//purge_buffer();
 						fgets(buffer,TAILLE_MAX_BUFFER,stdin);
 						choix_auto2 = atoi(buffer);
 					} while(choix_auto2 < 0 || choix_auto2 >= nb_auto_nd || choix_auto2 == choix_auto1);
@@ -246,7 +238,6 @@ int main (){
 							affichage_automate_non_deterministe(auto_nd_act);
 							auto_nd_act = auto_nd_act->automate_suivant;
 						}
-						//purge_buffer();
 						fgets(buffer,TAILLE_MAX_BUFFER,stdin);
 						choix_auto1 = atoi(buffer);
 					} while(choix_auto1 < 0 || choix_auto1 >= nb_auto_nd);
@@ -286,7 +277,6 @@ int main (){
 							affichage_auto_deterministe(auto_d_act);
 							auto_d_act = auto_d_act->automate_suivant;
 						}
-						//purge_buffer();
 						fgets(buffer,TAILLE_MAX_BUFFER,stdin);
 						choix_auto1 = atoi(buffer);
 					} while(choix_auto1 < 0 || choix_auto1 >= nb_auto_d);
@@ -304,7 +294,6 @@ int main (){
 					
 					//entrée du mot
 					printf("Entrez le mot\n");
-					//purge_buffer();
 					fgets(buffer,TAILLE_MAX_BUFFER,stdin);
 					
 					//execution du mot
@@ -329,7 +318,6 @@ int main (){
 							affichage_automate_non_deterministe(auto_nd_act);
 							auto_nd_act = auto_nd_act->automate_suivant;
 						}
-						//purge_buffer();
 						fgets(buffer,TAILLE_MAX_BUFFER,stdin);
 						choix_auto1 = atoi(buffer);
 					} while(choix_auto1 < 0 || choix_auto1 >= nb_auto_nd);
@@ -388,7 +376,6 @@ int main (){
 							affichage_auto_deterministe(auto_d_act);
 							auto_d_act = auto_d_act->automate_suivant;
 						}
-						//purge_buffer();
 						fgets(buffer,TAILLE_MAX_BUFFER,stdin);
 						choix_auto1 = atoi(buffer);
 					} while(choix_auto1 < 0 || choix_auto1 >= nb_auto_d);
@@ -458,10 +445,3 @@ int main (){
 	return 0;
 }
 
-
-void purge_buffer(){
-	int c;
-	
-	while((c = getchar()) != '\n' && c != EOF){
-	}
-}
