@@ -3,6 +3,10 @@
 #include "automate_non_deterministe.h"
 #include "automate_deterministe.h"
 
+#define TAILLE_MAX_BUFFER 100
+
+void purge_buffer();
+
 int main (){
 	Automate_non_deterministe* liste_automate_nd = NULL;
 	Automate_non_deterministe* auto_nd_act = NULL;
@@ -12,19 +16,23 @@ int main (){
 	Automate_deterministe* auto_d_act = NULL;
 	Automate_deterministe* auto_d = NULL;
 	Automate_deterministe* auto1_d = NULL;
-	int choix,choix_auto1,choix_auto2,i;
+	long choix,choix_auto1,choix_auto2;
+	int i;
 	int nb_auto_nd = 0;
 	int nb_auto_d = 0;
 	char lettre;
-	char mot[100];
+	char buffer[TAILLE_MAX_BUFFER];
 	
 	do{
-		printf("***** Analyseur lexical ****\nQue voulez-vous faire ?\n");
+		printf("\n***** Analyseur lexical *****\n\n***** Attention, si le choix entré n'est pas un nombre, le choix par défaut sera 0 *****\n");
+		printf("Que voulez-vous faire ?\n");
 		printf("(0) Quitter\n(1) Langage vide\n(2) Mot vide\n(3) Un mot\n");
 		printf("(4) Réunion\n(5) Concaténation\n(6) Mise à l'étoile\n");
 		printf("(7) Exécution d'un mot\n(8) Déterminisation\n(9) Minimisation\n");
 		
-		scanf(" %d",&choix);
+		//purge_buffer();
+		fgets(buffer,TAILLE_MAX_BUFFER,stdin);
+		choix = atoi(buffer);
 		
 		switch(choix){
 			case 0: //quitter
@@ -59,9 +67,16 @@ int main (){
 				break;
 			case 3: //Un mot
 				printf("Entrez un caractère \n");
-				scanf(" %c",&lettre);
+				//purge_buffer();
+				fgets(buffer,TAILLE_MAX_BUFFER,stdin);
+				lettre = buffer[0];
 				
-				auto1_nd = un_mot(lettre);
+				if(lettre == '\0' || lettre == '\n'){
+					auto1_nd = mot_vide();
+				}
+				else{
+					auto1_nd = un_mot(lettre);
+				}
 				//ajout à la liste
 				auto1_nd->automate_suivant = liste_automate_nd;
 				liste_automate_nd = auto1_nd;
@@ -87,7 +102,9 @@ int main (){
 							affichage_automate_non_deterministe(auto_nd_act);
 							auto_nd_act = auto_nd_act->automate_suivant;
 						}
-						scanf(" %d",&choix_auto1);
+						//purge_buffer();
+						fgets(buffer,TAILLE_MAX_BUFFER,stdin);
+						choix_auto1 = atoi(buffer);
 					} while(choix_auto1 < 0 || choix_auto1 >= nb_auto_nd);
 					
 					do{ //choix du 2e automate
@@ -100,7 +117,9 @@ int main (){
 							}
 							auto_nd_act = auto_nd_act->automate_suivant;
 						}
-						scanf(" %d",&choix_auto2);
+						//purge_buffer();
+						fgets(buffer,TAILLE_MAX_BUFFER,stdin);
+						choix_auto2 = atoi(buffer);
 					} while(choix_auto2 < 0 || choix_auto2 >= nb_auto_nd || choix_auto2 == choix_auto1);
 					
 					//recherche des automates dans la liste
@@ -156,7 +175,9 @@ int main (){
 							affichage_automate_non_deterministe(auto_nd_act);
 							auto_nd_act = auto_nd_act->automate_suivant;
 						}
-						scanf(" %d",&choix_auto1);
+						//purge_buffer();
+						fgets(buffer,TAILLE_MAX_BUFFER,stdin);
+						choix_auto1 = atoi(buffer);
 					} while(choix_auto1 < 0 || choix_auto1 >= nb_auto_nd);
 					
 					do{ //choix du 2e automate
@@ -169,7 +190,9 @@ int main (){
 							}
 							auto_nd_act = auto_nd_act->automate_suivant;
 						}
-						scanf(" %d",&choix_auto2);
+						//purge_buffer();
+						fgets(buffer,TAILLE_MAX_BUFFER,stdin);
+						choix_auto2 = atoi(buffer);
 					} while(choix_auto2 < 0 || choix_auto2 >= nb_auto_nd || choix_auto2 == choix_auto1);
 					
 					//recherche des automates dans la liste
@@ -223,7 +246,9 @@ int main (){
 							affichage_automate_non_deterministe(auto_nd_act);
 							auto_nd_act = auto_nd_act->automate_suivant;
 						}
-						scanf(" %d",&choix_auto1);
+						//purge_buffer();
+						fgets(buffer,TAILLE_MAX_BUFFER,stdin);
+						choix_auto1 = atoi(buffer);
 					} while(choix_auto1 < 0 || choix_auto1 >= nb_auto_nd);
 					
 					//recherche des automates dans la liste
@@ -261,7 +286,9 @@ int main (){
 							affichage_auto_deterministe(auto_d_act);
 							auto_d_act = auto_d_act->automate_suivant;
 						}
-						scanf(" %d",&choix_auto1);
+						//purge_buffer();
+						fgets(buffer,TAILLE_MAX_BUFFER,stdin);
+						choix_auto1 = atoi(buffer);
 					} while(choix_auto1 < 0 || choix_auto1 >= nb_auto_d);
 					
 					//recherche de l'automate dans la liste
@@ -277,10 +304,11 @@ int main (){
 					
 					//entrée du mot
 					printf("Entrez le mot\n");
-					scanf(" %s",mot);
+					//purge_buffer();
+					fgets(buffer,TAILLE_MAX_BUFFER,stdin);
 					
 					//execution du mot
-					execution_mot(auto_d,mot);
+					execution_mot(auto_d,buffer);
 					
 					//Remise à NULL
 					auto_d = NULL;
@@ -301,7 +329,9 @@ int main (){
 							affichage_automate_non_deterministe(auto_nd_act);
 							auto_nd_act = auto_nd_act->automate_suivant;
 						}
-						scanf(" %d",&choix_auto1);
+						//purge_buffer();
+						fgets(buffer,TAILLE_MAX_BUFFER,stdin);
+						choix_auto1 = atoi(buffer);
 					} while(choix_auto1 < 0 || choix_auto1 >= nb_auto_nd);
 					
 					//recherche de l'automate dans la liste
@@ -358,7 +388,9 @@ int main (){
 							affichage_auto_deterministe(auto_d_act);
 							auto_d_act = auto_d_act->automate_suivant;
 						}
-						scanf(" %d",&choix_auto1);
+						//purge_buffer();
+						fgets(buffer,TAILLE_MAX_BUFFER,stdin);
+						choix_auto1 = atoi(buffer);
 					} while(choix_auto1 < 0 || choix_auto1 >= nb_auto_d);
 					
 					//recherche de l'automate dans la liste
@@ -424,4 +456,12 @@ int main (){
 	}
 
 	return 0;
+}
+
+
+void purge_buffer(){
+	int c;
+	
+	while((c = getchar()) != '\n' && c != EOF){
+	}
 }
