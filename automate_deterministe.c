@@ -240,9 +240,6 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
 
     //Création du nouvel automate
     automate_m->tab_transition = malloc(automate->nb_groupe_etat*sizeof(Groupe_etat**));
-    for(i=0;i<automate->nb_groupe_etat;i++){
-        automate_m->tab_transition[i] = malloc(nb_caractere*sizeof(Groupe_etat*));
-    }
 
     //On initialise la premiere ligne du tableau en fonction des états accepteurs
     i=0;
@@ -412,8 +409,9 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
             }
         }
 
-        //Si ce n'est pas un doublon, on ajoute notre transition
+        //Si ce n'est pas un doublon, on alloue la mémoire et ajoute notre transition
         if(ok==0){
+			automate_m->tab_transition[k] = malloc(nb_caractere*sizeof(Groupe_etat*));
             for(j=0;j<nb_caractere;j++){
                 groupe_etat_act = automate_m->liste_groupe_etat;
                 ok=0;
@@ -427,11 +425,6 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
             }
         }
         k++;
-    }
-
-    //On libère les lignes du tableau de transition en trop
-    for(j=k;j<i;j++){
-        free(automate_m->tab_transition[j]);
     }
 
   //Tri de la liste des groupes d'état pour mettre les accepteurs en 1er
