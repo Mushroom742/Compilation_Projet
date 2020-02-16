@@ -370,7 +370,11 @@ void concatenation(Automate_non_deterministe* automate1, Automate_non_determinis
 	Transition* trans_act = NULL;
 	Transition* trans_tmp = NULL;
 	Transition* new_trans = NULL;
-	
+
+	/*
+	 *Dans le cas où il n'existe pas d'état accepteur dans le premier automate,
+	 *Renvoie le premier automate et libère le deuxième.
+	 */
 	if(automate1->liste_etat->accepteur == 0){//pas d'état accepteur dans le 1er automate
 		free_automate(automate2);
 		return;
@@ -378,72 +382,59 @@ void concatenation(Automate_non_deterministe* automate1, Automate_non_determinis
 
 	reunion_alphabet(automate1,automate2);
 
-	//réallocation du tableau de transition + remplissage avec les transitions de l'automate 2
+	//Réallocation du tableau de transition
 	automate1->tab_transition = (Transition**) realloc(automate1->tab_transition, (automate1->nombreEtats + automate2->nombreEtats - 1)* sizeof(Transition*));
 	assert(automate1->tab_transition != NULL); //vérification de la réalloc
 
 	for(i=automate1->nombreEtats;i<(automate1->nombreEtats + automate2->nombreEtats - 1);i++){
 		automate1->tab_transition[i] = NULL;
 	}
-	
-	//PRINT
+
+	//Selection des transitions de l'état initial du deuxième automate
 	trans_act = automate2->tab_transition[automate2->etat_initial->num];
 	while(trans_act != NULL){
-		printf("ON A %c\n", trans_act->caractere->symbole);
-		trans_act = trans_act->transitionSuivante;
-	}
-	//
-	
-	trans_act = automate2->tab_transition[automate2->etat_initial->num];
-	while(trans_act != NULL){
-		printf("SYMBOLE BEGIN %c\n", trans_act->caractere->symbole);
+
+		//Selection des états accepteurs du premier automate
 		etat_tmp = automate1->liste_etat;
 		while(etat_tmp!=NULL && etat_tmp->accepteur==1){
 
-			//On cree notre nouvelle transition puis on l'ajoute
+			//Creation de notre nouvelle transition puis on l'ajoute
 			new_trans = malloc(sizeof(Transition));
 			new_trans->depart = etat_tmp;
 			new_trans->arrivee = trans_act->arrivee;
 			new_trans->caractere = trans_act->caractere;
 			ajout_transition(new_trans,automate1->tab_transition);
-			
-			//On passe à l'état suivant
-			if(etat_tmp->etat_suivant!=NULL){
-				etat_tmp = etat_tmp->etat_suivant;
-			}
-			else{
-				break;
-			}
+
+			//Passage à l'état suivant
+			etat_tmp = etat_tmp->etat_suivant;
 		}
-		
+
+		//Passage à la transition suivante
 		trans_act = trans_act->transitionSuivante;
 	}
-	
-	trans_act = automate2->tab_transition[automate2->etat_initial->num];
-	while(trans_act != NULL){
-		
+
+	/*
+	 *Si l'état initial du deuxième automate n'est pas accepteur,
+	 *Passage de tous les états accepteurs du premier automate
+	 *en non accepteur
+	 */
+	if(automate2->etat_initial->accepteur == 0){
 		etat_tmp = automate1->liste_etat;
 		while(etat_tmp!=NULL && etat_tmp->accepteur==1){
-			
-			//Si l'etat initial de l'automate2 n'est pas final, les etats finaux de l'automate1 ne le sont plus
-			if(automate2->etat_initial->accepteur == 0){
-				etat_tmp->accepteur = 0;
-			}
-			
-			//On passe à l'état suivant
-			if(etat_tmp->etat_suivant!=NULL){
-				etat_tmp = etat_tmp->etat_suivant;
-			}
-			else{
-				break;
-			}
+			etat_tmp->accepteur = 0;
+			etat_tmp = etat_tmp->etat_suivant;
 		}
-		
+	}
+
+	//Libration des transitions de l'état initial du deuxième automate
+	trans_act = automate2->tab_transition[automate2->etat_initial->num];
+	while(trans_act != NULL){
+
 		trans_tmp = trans_act->transitionSuivante;
 		free(trans_act);
 		trans_act = trans_tmp;
 	}
-	
+
 	//ajout des etats de l'automate 2 dans l'automate 1
 	if(automate1->liste_etat->accepteur == 0){ //si l'automate 1 n'a pas d'états accepteurs, on ajoute au début en modifiant les numéros
 		etat_tmp = automate1->liste_etat;
@@ -494,23 +485,33 @@ void concatenation(Automate_non_deterministe* automate1, Automate_non_determinis
 		}
 		etat_act->etat_suivant = etat_tmp;
 	}
-	
+
+	/*
+	 *Déplacement de toutes les transitions restantes du deuxième automate,
+	 *à la suite de celles du premier automate
+	 */
 	for(i=0;i<automate2->nombreEtats;i++){
-	//On ajoute les transitions restantes à la suite de celles de l'automate1
+
 		if(i != automate2->etat_initial->num){
 			trans_act = automate2->tab_transition[i];
+
 			while(trans_act != NULL){
 				trans_tmp = trans_act->transitionSuivante;
 				ajout_transition(trans_act,automate1->tab_transition);
 				trans_act = trans_tmp;
 			}
+
 		}
+
 	}
 
-	//on change le nombre d'états de l'automate 1
+	//Changement du nombre d'états du premier automate
 	automate1->nombreEtats = automate1->nombreEtats + automate2->nombreEtats - 1;
 
-	//suppressions de l'init de automate2
+	/*
+	 *Suppression de l'état initial du deuxième automate,
+	 *ainsi que de son tableau, puis lui même.
+	 */
 	free(automate2->etat_initial);
 	free(automate2->tab_transition);
 	free(automate2);
@@ -561,7 +562,7 @@ void mise_etoile(Automate_non_deterministe* automate){
 }
 
 
-//free un automate
+//Free un automate
 void free_automate(Automate_non_deterministe* automate){
 	int i;
 	Transition* transition_act;
@@ -571,6 +572,7 @@ void free_automate(Automate_non_deterministe* automate){
 	Etat* etat_act;
 	Etat* etat_tmp;
 
+	//Libération de l'alphabet, caractère par caractère
 	caractere_act = automate->alphabet;
 	while(caractere_act != NULL && caractere_act->caractere_suivant != NULL){
 		caractere_tmp = caractere_act->caractere_suivant;
@@ -579,6 +581,7 @@ void free_automate(Automate_non_deterministe* automate){
 	}
 	free(caractere_act);
 
+	//Libération des états
 	etat_act = automate->liste_etat;
 	while(etat_act != NULL && etat_act->etat_suivant != NULL){
 		etat_tmp = etat_act->etat_suivant;
@@ -587,6 +590,7 @@ void free_automate(Automate_non_deterministe* automate){
 	}
 	free(etat_act);
 
+	//Libération des lignes de transition, puis du tableau de transition
 	for(i=0;i<automate->nombreEtats;i++){
 		transition_act = automate->tab_transition[i];
 		while(transition_act != NULL && transition_act->transitionSuivante != NULL){
@@ -598,5 +602,6 @@ void free_automate(Automate_non_deterministe* automate){
 	}
 	free(automate->tab_transition);
 
+	//Libération de l'automate
 	free(automate);
 }

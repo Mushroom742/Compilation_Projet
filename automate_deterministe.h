@@ -36,10 +36,13 @@ struct Automate_deterministe {
 	Automate_deterministe* automate_suivant;
 };
 
+//Execute un automate déterministe sur un mot
 void execution_mot(Automate_deterministe* automate, char* mot);
 
+//Determinise un automate non déterministe et renvoie sa version déterministe
 Automate_deterministe* determinisation(Automate_non_deterministe* automate_nd);
 
+//Minimise un automate déterministe
 Automate_deterministe* minimisation(Automate_deterministe* automate);
 
 //Création d'un groupe d'état à partir d'un état
