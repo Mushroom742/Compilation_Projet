@@ -85,7 +85,7 @@ int main (){
 				auto1_nd = NULL;
 				
 				break;				
-			case 4://reunion
+			case 4://réunion
 				if(nb_auto_nd < 2){
 					printf("Il faut au moins 2 automates non déterministes pour faire une réunion\n");
 				}
@@ -242,7 +242,7 @@ int main (){
 						choix_auto1 = atoi(buffer);
 					} while(choix_auto1 < 0 || choix_auto1 >= nb_auto_nd);
 					
-					//recherche des automates dans la liste
+					//recherche de l'automate dans la liste
 					auto_nd_act = liste_automate_nd;
 					i = 0;
 					while(auto1_nd == NULL){
@@ -296,7 +296,7 @@ int main (){
 					printf("Entrez le mot\n");
 					fgets(buffer,TAILLE_MAX_BUFFER,stdin);
 					
-					//execution du mot
+					//exécution du mot
 					execution_mot(auto_d,buffer);
 					
 					//Remise à NULL
@@ -346,7 +346,7 @@ int main (){
 					}
 					nb_auto_nd--;
 					
-					//determinisation
+					//déterminisation
 					auto_d = determinisation(auto1_nd);
 					printf("Automate créé : \n");
 					affichage_auto_deterministe(auto_d);
@@ -420,7 +420,7 @@ int main (){
 		}
 	} while(choix != 0);
 	
-	//free liste automate non deterministe
+	//free liste automate non déterministe
 	if(liste_automate_nd != NULL){
 		auto_nd_act = liste_automate_nd;
 		while(auto_nd_act->automate_suivant != NULL){
@@ -431,7 +431,7 @@ int main (){
 		free_automate(auto_nd_act);
 	}
 	
-	//free liste automate deterministe
+	//free liste automate déterministe
 	if(liste_automate_d != NULL){
 		auto_d_act = liste_automate_d;
 		while(auto_d_act->automate_suivant != NULL){

@@ -98,7 +98,7 @@ void reunion_alphabet(Automate_non_deterministe* automate1, Automate_non_determi
 		return;
 	}
 	else if(automate1->alphabet->symbole == automate2->alphabet->symbole){//si même caractère au début
-		//dans les transitions, on remplace le caractère de l'automate 2 par celui de l'automate1
+		//dans les transitions, on remplace le caractère de l'automate 2 par celui de l'automate 1
 		for(i=0;i<automate2->nombreEtats;i++){
 			trans_act = automate2->tab_transition[i];
 			while(trans_act != NULL){
@@ -208,7 +208,7 @@ void ajout_transition(Transition* transition, Transition** tab_transition){
 }
 
 
-//Affiche un automate
+//Affiche un automate non déterministe
 void affichage_automate_non_deterministe(Automate_non_deterministe* automate){
 	int i;
 	Transition* transition_act;
@@ -259,7 +259,7 @@ void reunion(Automate_non_deterministe* automate1, Automate_non_deterministe* au
 
 	//ajout des etats de l'automate 2 dans l'automate 1
 
-	if(automate1->liste_etat->accepteur == 0){ //si l'automate 1 n'a pas d'états accepteurs, on ajoute au début en modifiant les numéros
+	if(automate1->liste_etat->accepteur == 0){ //si l'automate 1 n'a pas d'état accepteur, on ajoute au début en modifiant les numéros
 		etat_tmp = automate1->liste_etat;
 		if(automate2->liste_etat == automate2->etat_initial) {
 			automate1->liste_etat = automate2->liste_etat->etat_suivant;
@@ -339,8 +339,8 @@ void reunion(Automate_non_deterministe* automate1, Automate_non_deterministe* au
 		}
 	}
 
-	//si état initial de l'automate 2 est accepteur, on rend l'état initial
-	//accepteur de l'automate 1 et on met l'état au bon endroit dans la liste
+	/*si état initial de l'automate 2 est accepteur, on rend l'état initial
+	* accepteur de l'automate 1 et on met l'état au bon endroit dans la liste */
 	if(automate1->etat_initial->accepteur == 0 && automate2->etat_initial->accepteur == 1){
 		automate1->etat_initial->accepteur = 1;
 		etat_act = automate1->liste_etat;
@@ -362,7 +362,7 @@ void reunion(Automate_non_deterministe* automate1, Automate_non_deterministe* au
 
 }
 
-//Renvoie un automate standard reconnaissant la concaténation des langages des 2 automates passés en paramètre
+//Concaténation des automates 1 et 2 dans l'automate 1
 void concatenation(Automate_non_deterministe* automate1, Automate_non_deterministe* automate2){
 	Etat* etat_act = NULL;
 	Etat* etat_tmp = NULL;
@@ -436,7 +436,7 @@ void concatenation(Automate_non_deterministe* automate1, Automate_non_determinis
 	}
 
 	//ajout des etats de l'automate 2 dans l'automate 1
-	if(automate1->liste_etat->accepteur == 0){ //si l'automate 1 n'a pas d'états accepteurs, on ajoute au début en modifiant les numéros
+	if(automate1->liste_etat->accepteur == 0){ //si l'automate 1 n'a pas d'état accepteur, on ajoute au début en modifiant les numéros
 		etat_tmp = automate1->liste_etat;
 		if(automate2->liste_etat == automate2->etat_initial) {
 			automate1->liste_etat = automate2->liste_etat->etat_suivant;
@@ -562,7 +562,7 @@ void mise_etoile(Automate_non_deterministe* automate){
 }
 
 
-//Free un automate
+//Free un automate non déterministe
 void free_automate(Automate_non_deterministe* automate){
 	int i;
 	Transition* transition_act;

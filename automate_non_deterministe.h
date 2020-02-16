@@ -1,8 +1,6 @@
 #ifndef AUTOMATE_NON_DETERMINISTE
 #define AUTOMATE_NON_DETERMINISTE
 
-#define TAILLE_ASCII 128
-
 /* type caractère défini par un symbole, un numéro et le caractere suivant dans la liste
  */
 typedef struct Caractere Caractere;
@@ -60,25 +58,25 @@ Automate_non_deterministe* un_mot(char symbole);
 //Ajoute l'alphabet de l'automate 2 dans l'alphabet de l'automate 1
 void reunion_alphabet(Automate_non_deterministe* automate1, Automate_non_deterministe* automate2);
 
-//Création d'un tableau de transitions alloué dynamiquement
+//Création d'un tableau de listes de transitions alloué dynamiquement
 Transition** init_tab_transition(int taille);
 
 //Ajoute une transition dans le tableau de transition en fonction de son état de départ
 void ajout_transition(Transition* transition, Transition** tab_transition);
 
-//Affiche un automate
+//Affiche un automate non déterministe
 void affichage_automate_non_deterministe(Automate_non_deterministe* automate);
 
 //Réunion des automates 1 et 2 dans l'automate 1
 void reunion(Automate_non_deterministe* automate1, Automate_non_deterministe* automate2);
 
-//Renvoie un automate standard reconnaissant la concaténation des langages des 2 automates passés en paramètre
+//Concaténation des automates 1 et 2 dans l'automate 1
 void concatenation(Automate_non_deterministe* automate1, Automate_non_deterministe* automate2);
 
 //Mise à l'étoile (ou fermeture itérative de Kleene) de l'automate
 void mise_etoile(Automate_non_deterministe* automate);
 
-//free un automate
+//Free un automate non déterministe
 void free_automate(Automate_non_deterministe* automate);
 
 #endif

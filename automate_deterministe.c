@@ -199,7 +199,7 @@ Automate_deterministe* determinisation(Automate_non_deterministe* automate_nd){
 	return automate_d;
 }
 
-//minimise un automate déterministe
+//Minimise un automate déterministe
 Automate_deterministe* minimisation(Automate_deterministe* automate){
     Automate_deterministe* automate_m = malloc(sizeof(Automate_deterministe));
 
@@ -213,7 +213,7 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
     Groupe_etat* groupe_etat_tmp = NULL;
     Caractere* caractere_act = NULL;
 
-    //Calcul du nombre de caractère
+    //Calcul du nombre de caractères
     caractere_act = automate->alphabet;
     while(caractere_act!=NULL){
         nb_caractere++;
@@ -259,7 +259,7 @@ Automate_deterministe* minimisation(Automate_deterministe* automate){
     ok=0;
     while (ok==0) {
 
-        //On remplis les transitions de notre tableau
+        //On remplit les transitions de notre tableau
         for(i=0;i<nb_caractere;i++){
             for(j=0;j<automate->nb_groupe_etat;j++){
                 tab[i+1][j] = tab[0][automate->tab_transition[j][i]->numero];
@@ -510,7 +510,8 @@ void ajout_etat(Etat* etat, Groupe_etat* groupe_etat){
 			i++;
 		}
 	}
-	if(i == groupe_etat->nb_etat){
+	if(i == groupe_etat->nb_etat){ //tous les numéros d'état sont plus petit que celui de l'état à ajouter
+		//on va ajouter l'état à la fin du tableau
 		groupe_etat->tab_etat = (Etat**) realloc(groupe_etat->tab_etat,(groupe_etat->nb_etat + 1) * sizeof(Etat*));
 		assert(groupe_etat->tab_etat != NULL); //test de la réallocation
 	}
